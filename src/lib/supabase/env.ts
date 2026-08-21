@@ -1,6 +1,4 @@
-function readEnv(name: string): string {
-  const value = process.env[name];
-
+function required(value: string | undefined, name: string): string {
   if (!value) {
     throw new Error(`variavel de ambiente ausente: ${name}`);
   }
@@ -9,13 +7,16 @@ function readEnv(name: string): string {
 }
 
 export function supabaseUrl(): string {
-  return readEnv("NEXT_PUBLIC_SUPABASE_URL");
+  return required(process.env.NEXT_PUBLIC_SUPABASE_URL, "NEXT_PUBLIC_SUPABASE_URL");
 }
 
 export function supabasePublishableKey(): string {
-  return readEnv("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY");
+  return required(
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+    "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
+  );
 }
 
 export function supabaseSecretKey(): string {
-  return readEnv("SUPABASE_SECRET_KEY");
+  return required(process.env.SUPABASE_SECRET_KEY, "SUPABASE_SECRET_KEY");
 }

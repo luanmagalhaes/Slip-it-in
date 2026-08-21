@@ -21,6 +21,7 @@ export interface RoomSnapshot {
 }
 
 const sweepIntervalMs = 5000;
+const pollIntervalMs = 4000;
 
 export function useRoom({ code, token }: UseRoomInput) {
   const [room, setRoom] = useState<RoomRow | null>(null);
@@ -142,6 +143,27 @@ export function useRoom({ code, token }: UseRoomInput) {
       void client.removeChannel(channel);
     };
   }, [code, room?.id, refreshAll]);
+
+  useEffect(() => {
+    if (!code) {
+      return;
+    }
+
+    const tick = () => {
+      if (document.visibilityState === "visible") {
+        void refreshAll();
+      }
+    };
+
+    const timer = window.setInterval(tick, pollIntervalMs);
+
+    document.addEventListener("visibilitychange", tick);
+
+    return () => {
+      window.clearInterval(timer);
+      document.removeEventListener("visibilitychange", tick);
+    };
+  }, [code, refreshAll]);
 
   useEffect(() => {
     if (!code || room?.phase !== "PLAYING" || !me?.isHost) {
