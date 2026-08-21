@@ -22,7 +22,10 @@ export function createMatch({
   rng = systemRng,
   seed = 0,
 }: CreateMatchInput): Match {
-  const eligible = filterDeckByAdultSetting(deck, settings.adultContentEnabled);
+  const eligible = filterDeckByAdultSetting(deck, {
+    adultContentEnabled: settings.adultContentEnabled,
+    hardContentEnabled: settings.hardContentEnabled,
+  });
   const shuffled = shuffleDeck(eligible, rng);
   const { players, drawPile } = dealCards({
     deck: shuffled,

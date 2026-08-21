@@ -51,8 +51,8 @@ Followed by a **30-second contest window**, where the table votes on whether you
 
 - 📱 **Multiplayer on separate phones** — join a room with a 6-character code, check your hand whenever you want
 - ⚡ **Realtime table** — live feed, live accusations, no refreshing
-- 🃏 **300 original cards** across 8 categories
-- 🔞 **18+ toggle** — 50 spicy cards that stay out of the deck entirely when disabled
+- 🃏 **400 original cards** across 10 categories
+- 🔞 **Two independent 18+ tiers** — 50 flirty and 50 explicit cards, each gated separately and kept out of the deck entirely when off
 - 🏆 **Persistent scoreboard** — up to 12 named players, resettable
 - 🎬 **Slot animation** — cards physically drop into the box, `transform`/`opacity` only, 60fps on cheap phones
 - ♿ **`prefers-reduced-motion`** respected throughout
@@ -61,7 +61,7 @@ Followed by a **30-second contest window**, where the table votes on whether you
 
 ## 🎴 The deck
 
-300 cards, IDs `001`–`300`, verified by test:
+400 cards, IDs `001`–`400`, verified by test:
 
 | Category | Cards | Range |
 | -------- | :---: | ----- |
@@ -73,6 +73,8 @@ Followed by a **30-second contest window**, where the table votes on whether you
 | 🤡 Constrangedoras (embarrassing) | 25 | `206`–`230` |
 | 🎭 Plausíveis (plausible) | 20 | `231`–`250` |
 | 🔥 Picantes (spicy, 18+) | 50 | `251`–`300` |
+| 🌶️ Muito picantes (explicit, 18+) | 50 | `301`–`350` |
+| 🎤 Cultura pop (pop culture) | 50 | `351`–`400` |
 
 ```ts
 {
@@ -81,6 +83,7 @@ Followed by a **30-second contest window**, where the table votes on whether you
   category: "DAILY_LIFE",
   difficulty: "EASY",
   isAdult: false,
+  contentLevel: "REGULAR",
   tags: [],
 }
 ```
@@ -157,9 +160,9 @@ The secret key is server-side only. It bypasses RLS — never ship it to the cli
 
 The suite guards the rules that are easy to break by accident:
 
-- 🎴 Deck holds exactly **300** cards with unique, contiguous IDs
-- 🔞 Exactly **50** cards flagged `isAdult`
-- 🚫 **No** adult card can be dealt while the 18+ toggle is off
+- 🎴 Deck holds exactly **400** cards with unique, contiguous IDs
+- 🔞 Exactly **100** cards flagged `isAdult`, split 50/50 across the two tiers
+- 🚫 **No** adult card can be dealt while its tier is off, and explicit cards stay out unless 18+ is on too
 - 🤝 Dealing, claiming, accusing, penalties, and win detection
 - 🏆 Scoring math, including the empty-pile fallback
 
@@ -167,7 +170,7 @@ The suite guards the rules that are easy to break by accident:
 
 ## 🗺️ Roadmap
 
-- [x] 300-card deck with integrity tests
+- [x] 400-card deck with integrity tests
 - [x] Pure, tested game rules
 - [x] Mobile-only visual system with slot animation
 - [ ] Supabase schema with RLS-protected hands
@@ -181,6 +184,6 @@ The suite guards the rules that are easy to break by accident:
 
 ## 📜 Notes
 
-All 300 card sentences, the visual system, and the code in this repository are original work. Game mechanics are not copyrightable; no assets or text were taken from any existing product.
+All 400 card sentences, the visual system, and the code in this repository are original work. Game mechanics are not copyrightable; no assets or text were taken from any existing product.
 
 Built for playing in person, on cheap phones, with people who talk too much. 🗣️

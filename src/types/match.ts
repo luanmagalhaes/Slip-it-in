@@ -30,6 +30,7 @@ export interface MatchEvent {
 
 export interface MatchSettings {
   adultContentEnabled: boolean;
+  hardContentEnabled: boolean;
   initialHandSize: number;
   penaltyCardCount: number;
   emptyPilePointsLost: number;

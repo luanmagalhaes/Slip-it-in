@@ -1,5 +1,5 @@
 import { createCategoryCards } from "@/data/deck/createCategoryCards";
-import { CardCategory, CardDifficulty } from "@/types/card";
+import { CardCategory, CardDifficulty, ContentLevel } from "@/types/card";
 
 const texts = [
   "Eu tenho uma queda por gente que sabe provocar sem dizer quase nada.",
@@ -59,5 +59,6 @@ export const spicyCards = createCategoryCards({
   category: CardCategory.Spicy,
   difficulty: CardDifficulty.Hard,
   isAdult: true,
+  contentLevel: ContentLevel.Spicy,
   texts,
 });

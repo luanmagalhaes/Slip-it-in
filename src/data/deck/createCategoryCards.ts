@@ -1,4 +1,4 @@
-import type { Card, CardCategory, CardDifficulty } from "@/types/card";
+import { ContentLevel, type Card, type CardCategory, type CardDifficulty } from "@/types/card";
 import { formatCardId } from "@/utils/id";
 
 interface CategoryCardsInput {
@@ -6,6 +6,7 @@ interface CategoryCardsInput {
   category: CardCategory;
   difficulty: CardDifficulty;
   isAdult: boolean;
+  contentLevel?: ContentLevel;
   texts: readonly string[];
 }
 
@@ -14,6 +15,7 @@ export function createCategoryCards({
   category,
   difficulty,
   isAdult,
+  contentLevel = ContentLevel.Regular,
   texts,
 }: CategoryCardsInput): Card[] {
   return texts.map((text, index) => ({
@@ -22,6 +24,7 @@ export function createCategoryCards({
     category,
     difficulty,
     isAdult,
+    contentLevel,
     tags: [],
   }));
 }

@@ -6,6 +6,7 @@ import { createSeededRng } from "@/utils/rng";
 
 export const defaultSettings: MatchSettings = {
   adultContentEnabled: false,
+  hardContentEnabled: false,
   initialHandSize: 5,
   penaltyCardCount: 1,
   emptyPilePointsLost: 1,

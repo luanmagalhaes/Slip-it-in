@@ -9,6 +9,7 @@ import { normalizeDisplayName, slugifyName } from "@/utils/slug";
 const initialDraft: MatchDraft = {
   settings: {
     adultContentEnabled: false,
+    hardContentEnabled: false,
     initialHandSize: 5,
     penaltyCardCount: 1,
     emptyPilePointsLost: defaultScoringRules.emptyPilePenalty,

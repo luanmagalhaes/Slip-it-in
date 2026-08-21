@@ -15,6 +15,8 @@ export const categoryLabels: Record<CardCategory, string> = {
   [CardCategory.Embarrassing]: "Constrangedora",
   [CardCategory.Plausible]: "Plausível",
   [CardCategory.Spicy]: "Picante",
+  [CardCategory.SpicyHard]: "Muito picante",
+  [CardCategory.PopCulture]: "Cultura pop",
 };
 
 export const difficultyLabels: Record<CardDifficulty, string> = {
@@ -83,12 +85,15 @@ export const copy = {
   adultContent: {
     title: "Conteúdo 18+",
     question: "Ativar as cartas picantes?",
-    onLab: "Ligado",
     onLabel: "Ligado",
     onHint: "As 50 cartas 18+ entram no baralho.",
     offLabel: "Desligado",
     offHint: "Nenhuma carta 18+ entra no baralho. O jogo continua ótimo sem elas.",
     disclaimer: "Só ligue se todo mundo na mesa estiver de acordo.",
+    hardTitle: "Muito picante",
+    hardQuestion: "Liberar também as cartas explícitas?",
+    hardHint: "Mais 50 cartas, bem mais diretas que as picantes. Só liberam com o 18+ ligado.",
+    hardOffHint: "As cartas explícitas ficam fora do baralho.",
     next: "Continuar",
   },
   players: {

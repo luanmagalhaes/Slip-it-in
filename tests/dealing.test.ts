@@ -16,7 +16,7 @@ describe("distribuicao", () => {
   it("mantem o restante do baralho no monte", () => {
     const match = buildMatch({ adultContentEnabled: false }, ["Ana", "Bruno"]);
 
-    expect(match.drawPile).toHaveLength(250 - 10);
+    expect(match.drawPile).toHaveLength(300 - 10);
   });
 
   it("nao repete carta entre maos e monte", () => {
@@ -33,7 +33,7 @@ describe("distribuicao", () => {
     const match = buildMatch({ adultContentEnabled: false }, names);
 
     expect(match.players).toHaveLength(12);
-    expect(match.drawPile).toHaveLength(250 - 60);
+    expect(match.drawPile).toHaveLength(300 - 60);
   });
 
   it("recusa distribuir quando o baralho e insuficiente", () => {
@@ -54,8 +54,8 @@ describe("distribuicao", () => {
   it("embaralha sem perder nem duplicar carta", () => {
     const shuffled = shuffleDeck(baseDeck, createSeededRng(99));
 
-    expect(shuffled).toHaveLength(300);
-    expect(new Set(shuffled.map((card) => card.id)).size).toBe(300);
+    expect(shuffled).toHaveLength(400);
+    expect(new Set(shuffled.map((card) => card.id)).size).toBe(400);
   });
 
   it("nao modifica o baralho original ao embaralhar", () => {

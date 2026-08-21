@@ -1,12 +1,30 @@
-import type { Card } from "@/types/card";
+import { ContentLevel, type Card } from "@/types/card";
+
+export interface ContentSettings {
+  adultContentEnabled: boolean;
+  hardContentEnabled: boolean;
+}
+
+export function allowedContentLevels({
+  adultContentEnabled,
+  hardContentEnabled,
+}: ContentSettings): ContentLevel[] {
+  if (!adultContentEnabled) {
+    return [ContentLevel.Regular];
+  }
+
+  if (!hardContentEnabled) {
+    return [ContentLevel.Regular, ContentLevel.Spicy];
+  }
+
+  return [ContentLevel.Regular, ContentLevel.Spicy, ContentLevel.Hard];
+}
 
 export function filterDeckByAdultSetting(
   cards: readonly Card[],
-  adultContentEnabled: boolean,
+  settings: ContentSettings,
 ): Card[] {
-  if (adultContentEnabled) {
-    return [...cards];
-  }
+  const allowed = new Set<ContentLevel>(allowedContentLevels(settings));
 
-  return cards.filter((card) => !card.isAdult);
+  return cards.filter((card) => allowed.has(card.contentLevel));
 }
