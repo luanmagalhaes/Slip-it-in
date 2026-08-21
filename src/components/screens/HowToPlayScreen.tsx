@@ -1,19 +1,19 @@
 "use client";
 
-import { useAppState } from "@/components/layout/AppStateProvider";
 import { Button } from "@/components/ui/Button";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { copy } from "@/data/copy";
-import { Screen as ScreenName } from "@/types/navigation";
 
-export function HowToPlayScreen() {
-  const { goTo } = useAppState();
+interface HowToPlayScreenProps {
+  onBack: () => void;
+}
 
+export function HowToPlayScreen({ onBack }: HowToPlayScreenProps) {
   return (
     <Screen
       footer={
-        <Button variant="mint" size="lg" fullWidth onClick={() => goTo(ScreenName.Home)}>
+        <Button variant="mint" size="lg" fullWidth onClick={onBack}>
           {copy.howToPlay.back}
         </Button>
       }
@@ -21,7 +21,7 @@ export function HowToPlayScreen() {
       <ScreenHeader
         title={copy.howToPlay.title}
         subtitle={copy.howToPlay.subtitle}
-        onBack={() => goTo(ScreenName.Home)}
+        onBack={onBack}
       />
 
       <ol className="flex flex-col gap-3">

@@ -173,10 +173,11 @@ The suite guards the rules that are easy to break by accident:
 - [x] 400-card deck with integrity tests
 - [x] Pure, tested game rules
 - [x] Mobile-only visual system with slot animation
-- [ ] Supabase schema with RLS-protected hands
-- [ ] Rooms, join codes, realtime table
-- [ ] Arm / claim / contest flow end to end
+- [x] Supabase schema with RLS-protected hands
+- [x] Rooms, join codes, realtime table
+- [x] Arm / claim / contest flow end to end
 - [ ] Deploy
+- [ ] Cross-match scoreboard screen
 - [ ] Custom decks and card authoring
 - [ ] Match history and stats
 

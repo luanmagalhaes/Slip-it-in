@@ -1,10 +1,5 @@
-import { AppStateProvider } from "@/components/layout/AppStateProvider";
-import { ScreenRouter } from "@/components/layout/ScreenRouter";
+import { OnlineApp } from "@/components/online/OnlineApp";
 
 export default function Page() {
-  return (
-    <AppStateProvider>
-      <ScreenRouter />
-    </AppStateProvider>
-  );
+  return <OnlineApp />;
 }
