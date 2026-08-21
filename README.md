@@ -115,7 +115,7 @@ src/
 │   ├── screens/    # one file per screen
 │   └── ui/         # buttons, sheets, primitives
 ├── data/
-│   ├── deck/       # the 300 cards, one file per category
+│   ├── deck/       # the 400 cards, one file per category
 │   └── copy.ts     # every Portuguese string, in one place
 ├── hooks/
 ├── lib/
