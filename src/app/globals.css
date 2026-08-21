@@ -1,26 +1,326 @@
 @import "tailwindcss";
 
+@theme {
+  --color-ink: #14102b;
+  --color-shadow-deep: #0d0a1f;
+  --color-violet-950: #1d1440;
+  --color-violet-900: #2b1b54;
+  --color-violet-800: #3d2775;
+  --color-violet-700: #503398;
+  --color-violet-600: #6b4fbb;
+  --color-violet-500: #8468d4;
+  --color-violet-400: #a08ce4;
+  --color-violet-300: #c0b0ef;
+  --color-abyss: #1e3a5f;
+  --color-ocean: #3b6ea5;
+  --color-sky: #4a86c4;
+  --color-cyan-soft: #7ec8e3;
+  --color-mint: #a8e6cf;
+  --color-mint-light: #c4f0de;
+  --color-mint-deep: #6fc9a5;
+  --color-pink-hot: #e87fa8;
+  --color-pink-soft: #f5a9c4;
+  --color-cream: #f7f3e8;
+
+  --font-display: var(--font-anton), "Arial Black", sans-serif;
+  --font-game: var(--font-baloo), "Trebuchet MS", system-ui, sans-serif;
+  --font-body: var(--font-inter), system-ui, sans-serif;
+
+  --radius-bubble: 1.75rem;
+  --radius-pill: 999px;
+
+  --ease-snap: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-drop: cubic-bezier(0.55, 0, 0.85, 0.4);
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: dark;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html,
+body {
+  height: 100%;
+  overscroll-behavior: none;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-violet-950);
+  color: var(--color-cream);
+  font-family: var(--font-body);
+  -webkit-tap-highlight-color: transparent;
+  text-rendering: optimizeLegibility;
+}
+
+button {
+  touch-action: manipulation;
+}
+
+@utility gradient-stage {
+  background-image:
+    radial-gradient(120% 80% at 15% 0%, var(--color-violet-700) 0%, transparent 55%),
+    radial-gradient(110% 70% at 90% 12%, var(--color-ocean) 0%, transparent 50%),
+    linear-gradient(168deg, var(--color-violet-900) 0%, var(--color-violet-950) 45%, var(--color-abyss) 100%);
+}
+
+@utility gradient-card {
+  background-image: linear-gradient(
+    155deg,
+    var(--color-violet-500) 0%,
+    var(--color-violet-600) 42%,
+    var(--color-violet-800) 100%
+  );
+}
+
+@utility gradient-card-adult {
+  background-image: linear-gradient(
+    155deg,
+    var(--color-pink-hot) 0%,
+    var(--color-violet-600) 48%,
+    var(--color-violet-900) 100%
+  );
+}
+
+@utility gradient-mint {
+  background-image: linear-gradient(
+    170deg,
+    var(--color-mint-light) 0%,
+    var(--color-mint) 55%,
+    var(--color-mint-deep) 100%
+  );
+}
+
+@utility gradient-primary {
+  background-image: linear-gradient(
+    135deg,
+    var(--color-violet-500) 0%,
+    var(--color-sky) 100%
+  );
+}
+
+@utility wordmark {
+  font-family: var(--font-display);
+  letter-spacing: 0.01em;
+  transform: skewX(-9deg);
+  text-shadow:
+    2px 2px 0 var(--color-violet-800),
+    4px 4px 0 var(--color-shadow-deep);
+}
+
+@utility wordmark-sm {
+  font-family: var(--font-display);
+  letter-spacing: 0.01em;
+  transform: skewX(-9deg);
+  text-shadow: 1px 1px 0 var(--color-violet-800);
+}
+
+@utility font-game {
+  font-family: var(--font-game);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+@utility edge-soft {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.22),
+    0 2px 0 rgba(13, 10, 31, 0.35);
+}
+
+@utility edge-raised {
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.26),
+    inset 0 -3px 0 rgba(13, 10, 31, 0.22),
+    0 10px 22px -10px var(--color-shadow-deep);
+}
+
+@utility edge-inset {
+  box-shadow:
+    inset 0 3px 8px rgba(13, 10, 31, 0.55),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.08);
+}
+
+@utility ring-bubble {
+  box-shadow:
+    0 0 0 2px rgba(192, 176, 239, 0.28),
+    0 0 0 5px rgba(29, 20, 64, 0.55);
+}
+
+@utility tap-shrink {
+  transition: transform 140ms var(--ease-snap);
+  will-change: transform;
+}
+
+@utility gpu {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+@keyframes slot-insert {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+    opacity: 1;
+  }
+  32% {
+    transform: translate3d(0, calc(var(--slot-travel, 190px) * 0.1), 0) scale(0.95)
+      rotate(-2.5deg);
+    opacity: 1;
+  }
+  82% {
+    transform: translate3d(0, calc(var(--slot-travel, 190px) * 0.92), 0) scale(0.66)
+      rotate(2deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(0, var(--slot-travel, 190px), 0) scale(0.6) rotate(3deg);
+    opacity: 0;
+  }
+}
+
+@keyframes slot-flash {
+  0%,
+  100% {
+    transform: scaleX(1);
+    opacity: 0.35;
+  }
+  40% {
+    transform: scaleX(1.06);
+    opacity: 1;
+  }
+}
+
+@keyframes slot-count-pop {
+  0% {
+    transform: scale(1);
+  }
+  45% {
+    transform: scale(1.28);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes card-rise {
+  from {
+    transform: translate3d(0, 26px, 0) scale(0.96);
+    opacity: 0;
+  }
+  to {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes card-flip-in {
+  from {
+    transform: rotateY(-92deg);
+    opacity: 0;
+  }
+  to {
+    transform: rotateY(0deg);
+    opacity: 1;
+  }
+}
+
+@keyframes curtain-lift {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(0, -102%, 0);
+  }
+}
+
+@keyframes shake-alert {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  20% {
+    transform: translate3d(-7px, 0, 0);
+  }
+  45% {
+    transform: translate3d(6px, 0, 0);
+  }
+  70% {
+    transform: translate3d(-3px, 0, 0);
+  }
+}
+
+@keyframes confetti-fall {
+  from {
+    transform: translate3d(0, -12vh, 0) rotate(0deg);
+    opacity: 1;
+  }
+  to {
+    transform: translate3d(0, 105vh, 0) rotate(540deg);
+    opacity: 0;
+  }
+}
+
+@keyframes glow-drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(0, -14px, 0) scale(1.05);
+  }
+}
+
+@utility animate-slot-insert {
+  animation: slot-insert 620ms var(--ease-drop) forwards;
+  will-change: transform, opacity;
+}
+
+@utility animate-slot-flash {
+  animation: slot-flash 520ms var(--ease-snap);
+  will-change: transform, opacity;
+}
+
+@utility animate-slot-count-pop {
+  animation: slot-count-pop 420ms var(--ease-snap);
+  will-change: transform;
+}
+
+@utility animate-card-rise {
+  animation: card-rise 340ms var(--ease-snap) both;
+  will-change: transform, opacity;
+}
+
+@utility animate-card-flip-in {
+  animation: card-flip-in 380ms var(--ease-snap) both;
+  will-change: transform, opacity;
+}
+
+@utility animate-curtain-lift {
+  animation: curtain-lift 460ms var(--ease-snap) forwards;
+  will-change: transform;
+}
+
+@utility animate-shake-alert {
+  animation: shake-alert 420ms var(--ease-snap);
+  will-change: transform;
+}
+
+@utility animate-confetti {
+  animation: confetti-fall 2600ms linear forwards;
+  will-change: transform, opacity;
+}
+
+@utility animate-glow-drift {
+  animation: glow-drift 7s ease-in-out infinite;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+  }
 }

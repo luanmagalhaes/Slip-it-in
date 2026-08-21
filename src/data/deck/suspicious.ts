@@ -1,0 +1,48 @@
+import { createCategoryCards } from "@/data/deck/createCategoryCards";
+import { CardCategory, CardDifficulty } from "@/types/card";
+
+const texts = [
+  "Eu não deveria estar contando isso agora.",
+  "Eu tenho uma informação que provavelmente seria melhor guardar.",
+  "Eu não quero acusar ninguém, mas essa história está estranha.",
+  "Eu sei de uma coisa que mudaria completamente essa conversa.",
+  "Eu tenho certeza de que alguém aqui está escondendo alguma coisa.",
+  "Eu não esperava que essa conversa chegasse nesse ponto.",
+  "Eu tenho uma explicação, mas ela provavelmente vai piorar tudo.",
+  "Eu prefiro não dizer como descobri isso.",
+  "Eu não posso olhar para você sem lembrar de uma história.",
+  "Eu acho melhor ninguém perguntar o que aconteceu depois.",
+  "Eu não estava planejando falar disso hoje.",
+  "Eu tenho um motivo muito específico para não confiar nessa situação.",
+  "Eu acho que alguém aqui sabe exatamente do que estou falando.",
+  "Eu poderia explicar, mas a explicação seria muito suspeita.",
+  "Eu não quero criar um clima estranho, então vou ficar quieto.",
+  "Eu tenho uma história que parece mentira, mas infelizmente aconteceu.",
+  "Eu não sei se devo rir ou fingir que isso nunca aconteceu.",
+  "Eu acho que essa conversa está ficando perigosamente específica.",
+  "Eu tenho uma pergunta que talvez seja melhor não fazer.",
+  "Eu não posso confirmar nem negar essa informação.",
+  "Eu já ouvi uma versão muito diferente dessa história.",
+  "Eu acho que alguém aqui está omitindo a melhor parte.",
+  "Eu não esperava encontrar essa informação tão cedo.",
+  "Eu tenho um contexto que tornaria isso muito pior.",
+  "Eu não vou dizer quem estava envolvido.",
+  "Eu acho que seria prudente mudar de assunto.",
+  "Eu tenho certeza de que isso vai parecer estranho sem contexto.",
+  "Eu não sei por que, mas isso me parece familiar demais.",
+  "Eu poderia contar o final, mas perderia a graça.",
+  "Eu não quero ser responsável pelo que acontecer depois dessa frase.",
+  "Eu tenho uma teoria, mas ainda não estou pronto para defendê-la.",
+  "Eu acho que alguém aqui acabou de se entregar sem perceber.",
+  "Eu não estava preparado para essa resposta.",
+  "Eu tenho uma suspeita muito específica sobre essa situação.",
+  "Eu prefiro fingir que não ouvi essa parte.",
+] as const;
+
+export const suspiciousCards = createCategoryCards({
+  startId: 141,
+  category: CardCategory.Suspicious,
+  difficulty: CardDifficulty.Hard,
+  isAdult: false,
+  texts,
+});
