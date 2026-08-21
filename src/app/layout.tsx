@@ -44,7 +44,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="pt-BR"
       className={`${anton.variable} ${baloo.variable} ${inter.variable} h-full`}
     >
-      <body className="min-h-full antialiased">{children}</body>
+      <body className="min-h-full antialiased" suppressHydrationWarning>
+        {children}
+      </body>
     </html>
   );
 }

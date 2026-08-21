@@ -22,12 +22,44 @@ export function OnlineApp() {
   const [busy, setBusy] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
   const [insertingCardId, setInsertingCardId] = useState<string | null>(null);
+  const [prefilledCode, setPrefilledCode] = useState("");
   const now = useNow();
 
   const { room, players, claims, events, me, myVotedClaimIds, loading, error, refreshAll } = useRoom({
     code: session?.code ?? null,
     token: session?.accessToken ?? null,
   });
+
+  useEffect(() => {
+    if (!ready) {
+      return;
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get("code");
+    const token = params.get("token");
+    const invite = params.get("join");
+    const clearUrl = () =>
+      window.history.replaceState({}, "", window.location.pathname);
+
+    if (code && token && process.env.NODE_ENV !== "production") {
+      save({
+        code: code.toUpperCase(),
+        playerId: "",
+        accessToken: token,
+        name: params.get("name") ?? "Jogador",
+      });
+      clearUrl();
+
+      return;
+    }
+
+    if (invite) {
+      setPrefilledCode(invite.toUpperCase());
+      setView("JOIN");
+      clearUrl();
+    }
+  }, [ready, save]);
 
   useEffect(() => {
     if (!actionError) {
@@ -108,6 +140,7 @@ export function OnlineApp() {
         <JoinRoomScreen
           busy={busy}
           error={actionError}
+          initialCode={prefilledCode}
           onBack={() => setView("LANDING")}
           onSubmit={handleJoin}
         />
@@ -151,7 +184,7 @@ export function OnlineApp() {
       <VictoryScreen
         players={players}
         winnerId={room.winner_player_id}
-        myPlayerId={session.playerId}
+        myPlayerId={me?.playerId ?? session.playerId}
         onExit={leave}
       />
     );
