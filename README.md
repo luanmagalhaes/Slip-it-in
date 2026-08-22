@@ -2,6 +2,8 @@
 
 > Say the line. Blend it into the conversation. Don't get caught.
 
+**▶️ Play: [slip-it-in.vercel.app](https://slip-it-in.vercel.app)**
+
 A mobile party game where every player holds secret cards, and each card is a sentence you have to say out loud — slipped naturally into a real conversation. Pull it off unnoticed and the card is yours. Get read by the table and you pay for it.
 
 Card content is written in **Brazilian Portuguese** 🇧🇷 · code and identifiers in English.
@@ -176,7 +178,7 @@ The suite guards the rules that are easy to break by accident:
 - [x] Supabase schema with RLS-protected hands
 - [x] Rooms, join codes, realtime table
 - [x] Arm / claim / contest flow end to end
-- [ ] Deploy
+- [x] Deploy on Vercel
 - [ ] Cross-match scoreboard screen
 - [ ] Custom decks and card authoring
 - [ ] Match history and stats
