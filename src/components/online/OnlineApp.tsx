@@ -14,13 +14,20 @@ import { useCrewScoreboard } from "@/hooks/useCrewScoreboard";
 import { useNow } from "@/hooks/useNow";
 import { useRoom } from "@/hooks/useRoom";
 import { useSession } from "@/hooks/useSession";
+import { usePendingRequests } from "@/hooks/usePendingRequests";
+import { JoinRequestSheet } from "@/components/online/JoinRequestSheet";
+import { WaitingApprovalScreen } from "@/components/online/WaitingApprovalScreen";
 import {
+  clearPendingJoin,
   forgetSeat,
   inviteCodeFromUrl,
+  readPendingJoin,
   recentSeats,
   rememberCrewId,
   rememberedCrewId,
   seatFor,
+  writePendingJoin,
+  type PendingJoin,
 } from "@/lib/session/storage";
 import { RoomPhase } from "@/types/room";
 
@@ -33,6 +40,10 @@ export function OnlineApp() {
   const [busy, setBusy] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
   const [insertingCardId, setInsertingCardId] = useState<string | null>(null);
+  const [pendingJoin, setPendingJoin] = useState<PendingJoin | null>(() =>
+    typeof window === "undefined" ? null : readPendingJoin(),
+  );
+  const [rejected, setRejected] = useState(false);
   const now = useNow();
 
   const { room, players, claims, events, me, myVotedClaimIds, loading, error, refreshAll } =
@@ -42,6 +53,11 @@ export function OnlineApp() {
     });
 
   const crewId = room?.crew_id ?? session?.crewId ?? null;
+  const joinRequests = usePendingRequests({
+    code: session?.code ?? null,
+    token: session?.accessToken ?? null,
+    isHost: Boolean(me?.isHost) && room?.phase === RoomPhase.Playing,
+  });
   const crew = useCrewScoreboard(view === "SCOREBOARD" ? crewId : null);
 
   useEffect(() => {
@@ -67,7 +83,7 @@ export function OnlineApp() {
         await action();
         await refreshAll();
       } catch (cause) {
-        setActionError(cause instanceof Error ? cause.message : "erro inesperado");
+        setActionError(cause instanceof Error ? cause.message : "algo deu errado, tente de novo");
       } finally {
         setBusy(false);
       }
@@ -88,6 +104,10 @@ export function OnlineApp() {
         hardContentEnabled: input.hardContentEnabled,
         crewId: input.keepCrew ? rememberedCrewId() : null,
       });
+
+      if (created.pending) {
+        return;
+      }
 
       rememberCrewId(created.crewId);
       save({
@@ -120,6 +140,20 @@ export function OnlineApp() {
 
       const joined = await api.joinRoom(input.code, input.name);
 
+      if (joined.pending) {
+        const waiting = {
+          code: joined.code,
+          name: input.name,
+          requestToken: joined.requestToken,
+        };
+
+        writePendingJoin(waiting);
+        setPendingJoin(waiting);
+        setRejected(false);
+
+        return;
+      }
+
       rememberCrewId(joined.crewId);
       save({
         code: joined.code,
@@ -130,6 +164,13 @@ export function OnlineApp() {
       });
       setView("LANDING");
     });
+
+  const giveUpWaiting = () => {
+    clearPendingJoin();
+    setPendingJoin(null);
+    setRejected(false);
+    setView("LANDING");
+  };
 
   const resume = (code: string, name: string) => {
     const seat = seatFor(code, name);
@@ -154,6 +195,45 @@ export function OnlineApp() {
     setView("LANDING");
   };
 
+  useEffect(() => {
+    if (!pendingJoin) {
+      return;
+    }
+
+    const check = async () => {
+      try {
+        const status = await api.joinStatus(pendingJoin.code, pendingJoin.requestToken);
+
+        if (status.status === "APPROVED" && status.accessToken && status.playerId) {
+          rememberCrewId(status.crewId);
+          save({
+            code: status.code,
+            playerId: status.playerId,
+            accessToken: status.accessToken,
+            name: status.name,
+            crewId: status.crewId,
+          });
+          clearPendingJoin();
+          setPendingJoin(null);
+        }
+
+        if (status.status === "REJECTED") {
+          setRejected(true);
+        }
+      } catch {
+        return;
+      }
+    };
+
+    const first = window.setTimeout(() => void check(), 400);
+    const timer = window.setInterval(() => void check(), 3000);
+
+    return () => {
+      window.clearTimeout(first);
+      window.clearInterval(timer);
+    };
+  }, [pendingJoin, save]);
+
   const scoreboard = (
     <ScoreboardScreen
       entries={crew.entries}
@@ -167,6 +247,17 @@ export function OnlineApp() {
 
   if (view === "SCOREBOARD") {
     return scoreboard;
+  }
+
+  if (pendingJoin && !session) {
+    return (
+      <WaitingApprovalScreen
+        code={pendingJoin.code}
+        name={pendingJoin.name}
+        rejected={rejected}
+        onCancel={giveUpWaiting}
+      />
+    );
   }
 
   if (!session) {
@@ -242,6 +333,10 @@ export function OnlineApp() {
             const next = await api.rematch(session.code, session.accessToken);
             const joined = await api.joinRoom(next.code, session.name);
 
+            if (joined.pending) {
+              return;
+            }
+
             save({
               code: joined.code,
               playerId: joined.playerId,
@@ -277,31 +372,47 @@ export function OnlineApp() {
     return <div className="gradient-stage min-h-dvh" />;
   }
 
-  return (
-    <GameScreen
-      code={room.code}
-      me={me}
-      players={players}
-      claims={claims}
-      events={events}
-      myVotedClaimIds={myVotedClaimIds}
-      now={now}
-      busy={busy}
-      error={actionError}
-      insertingCardId={insertingCardId}
-      onArm={(cardId) => run(() => api.arm(session.code, session.accessToken, cardId))}
-      onClaim={() =>
-        run(async () => {
-          const claimed = await api.claim(session.code, session.accessToken);
+  const firstRequest = joinRequests.requests[0];
 
-          setInsertingCardId(claimed.cardId);
-        })
-      }
-      onAccuse={(playerId) => run(() => api.accuse(session.code, session.accessToken, playerId))}
-      onVote={(claimId, saidIt) =>
-        run(() => api.contest(session.code, session.accessToken, claimId, saidIt))
-      }
-      onInsertFinished={() => setInsertingCardId(null)}
-    />
+  return (
+    <>
+      {firstRequest ? (
+        <JoinRequestSheet
+          request={firstRequest}
+          busy={busy}
+          onResolve={(requestId, approve) =>
+            run(async () => {
+              await api.resolveRequest(session.code, session.accessToken, requestId, approve);
+              await joinRequests.refresh();
+            })
+          }
+        />
+      ) : null}
+      <GameScreen
+        code={room.code}
+        me={me}
+        players={players}
+        claims={claims}
+        events={events}
+        myVotedClaimIds={myVotedClaimIds}
+        now={now}
+        busy={busy}
+        error={actionError}
+        insertingCardId={insertingCardId}
+        onArm={(cardId) => run(() => api.arm(session.code, session.accessToken, cardId))}
+        onClaim={() =>
+          run(async () => {
+            const claimed = await api.claim(session.code, session.accessToken);
+
+            setInsertingCardId(claimed.cardId);
+          })
+        }
+        onAccuse={(playerId) => run(() => api.accuse(session.code, session.accessToken, playerId))}
+        onVote={(claimId, saidIt) =>
+          run(() => api.contest(session.code, session.accessToken, claimId, saidIt))
+        }
+        onInsertFinished={() => setInsertingCardId(null)}
+      />
+    </>
   );
 }

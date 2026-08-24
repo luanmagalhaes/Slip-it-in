@@ -175,6 +175,45 @@ export function forgetCrewId() {
   }
 }
 
+const pendingKey = "slip-it-in.pending";
+
+export interface PendingJoin {
+  code: string;
+  name: string;
+  requestToken: string;
+}
+
+export function readPendingJoin(): PendingJoin | null {
+  try {
+    const raw = window.localStorage.getItem(pendingKey);
+    const parsed = raw ? (JSON.parse(raw) as PendingJoin) : null;
+
+    return parsed?.code && parsed.requestToken ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+export function writePendingJoin(pending: PendingJoin) {
+  try {
+    window.localStorage.setItem(pendingKey, JSON.stringify(pending));
+  } catch {
+    return;
+  }
+
+  listeners.forEach((listener) => listener());
+}
+
+export function clearPendingJoin() {
+  try {
+    window.localStorage.removeItem(pendingKey);
+  } catch {
+    return;
+  }
+
+  listeners.forEach((listener) => listener());
+}
+
 export function inviteCodeFromUrl(): string {
   bootstrapFromUrl();
 

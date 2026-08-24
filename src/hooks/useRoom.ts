@@ -46,7 +46,7 @@ export function useRoom({ code, token }: UseRoomInput) {
       myPlayerIdRef.current = next.playerId;
       setMe(next);
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "erro ao carregar sua mao");
+      setError(cause instanceof Error ? cause.message : "não deu para carregar suas cartas");
     }
   }, [code, token]);
 
@@ -63,7 +63,7 @@ export function useRoom({ code, token }: UseRoomInput) {
       .maybeSingle();
 
     if (!roomRow) {
-      setError("sala nao encontrada");
+      setError("sala não encontrada");
       setLoading(false);
       return;
     }

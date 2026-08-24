@@ -5,7 +5,7 @@ export function playerToken(request: Request): string {
   const token = request.headers.get("x-player-token");
 
   if (!token) {
-    throw new ServiceError("token do jogador ausente", 401);
+    throw new ServiceError("sessão expirada, entre na sala de novo", 401);
   }
 
   return token;
@@ -19,7 +19,7 @@ export async function handle<T>(action: () => Promise<T>) {
       return NextResponse.json({ error: error.message }, { status: error.status });
     }
 
-    const message = error instanceof Error ? error.message : "erro inesperado";
+    const message = error instanceof Error ? error.message : "algo deu errado, tente de novo";
 
     return NextResponse.json({ error: message }, { status: 500 });
   }

@@ -13,17 +13,32 @@ async function request<T>(path: string, init: RequestInit = {}, token?: string):
   const payload = await response.json().catch(() => ({}));
 
   if (!response.ok) {
-    throw new ApiError((payload as { error?: string }).error ?? "erro inesperado");
+    throw new ApiError((payload as { error?: string }).error ?? "algo deu errado, tente de novo");
   }
 
   return payload as T;
 }
 
-export interface JoinResponse {
-  playerId: string;
-  accessToken: string;
-  code: string;
-  crewId: string | null;
+export type JoinResponse =
+  | {
+      pending: false;
+      playerId: string;
+      accessToken: string;
+      code: string;
+      crewId: string | null;
+    }
+  | {
+      pending: true;
+      requestId: string;
+      requestToken: string;
+      code: string;
+      crewId: string | null;
+    };
+
+export interface JoinRequestSummary {
+  id: string;
+  name: string;
+  createdAt: string;
 }
 
 export interface CrewEntry {
@@ -122,6 +137,33 @@ export const api = {
         isWinner: boolean;
       }>;
     }>(`/api/rooms/${code}/result`, { method: "GET" }),
+
+  joinStatus: (code: string, requestToken: string) =>
+    request<{
+      status: "PENDING" | "APPROVED" | "REJECTED";
+      name: string;
+      playerId: string | null;
+      accessToken: string | null;
+      code: string;
+      crewId: string | null;
+    }>(`/api/rooms/${code}/join-status`, {
+      method: "GET",
+      headers: { "x-request-token": requestToken },
+    }),
+
+  pendingRequests: (code: string, token: string) =>
+    request<{ requests: JoinRequestSummary[] }>(
+      `/api/rooms/${code}/requests`,
+      { method: "GET" },
+      token,
+    ),
+
+  resolveRequest: (code: string, token: string, requestId: string, approve: boolean) =>
+    request<{ approved: boolean; name: string }>(
+      `/api/rooms/${code}/requests`,
+      { method: "POST", body: JSON.stringify({ requestId, approve }) },
+      token,
+    ),
 
   kick: (code: string, token: string, playerId: string) =>
     request<{ removed: string }>(

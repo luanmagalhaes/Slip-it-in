@@ -34,7 +34,7 @@ async function loadRoom(code: string): Promise<RoomRow> {
   }
 
   if (!data) {
-    throw new ServiceError("sala nao encontrada", 404);
+    throw new ServiceError("sala não encontrada", 404);
   }
 
   return data as RoomRow;
@@ -53,7 +53,7 @@ async function loadPlayerByToken(room: RoomRow, token: string) {
   }
 
   if (!data) {
-    throw new ServiceError("jogador nao autorizado nesta sala", 401);
+    throw new ServiceError("você não está mais nesta sala", 401);
   }
 
   return data as unknown as {
@@ -123,6 +123,10 @@ export async function createRoom(input: {
 
   const joined = await joinRoom({ code: room.code, name: input.hostName, isHost: true });
 
+  if (joined.pending) {
+    throw new ServiceError("não foi possível criar a sala", 500);
+  }
+
   await client.from("rooms").update({ host_player_id: joined.playerId }).eq("id", room.id);
 
   return { ...joined, code: room.code as string, crewId: room.crew_id as string };
@@ -131,15 +135,18 @@ export async function createRoom(input: {
 export async function joinRoom(input: { code: string; name: string; isHost?: boolean }) {
   const client = serverClient();
   const room = await loadRoom(input.code);
-
-  if (room.phase !== RoomPhase.Lobby) {
-    throw new ServiceError("a partida ja comecou", 409);
-  }
-
   const name = input.name.trim();
 
+  if (room.phase === RoomPhase.Finished) {
+    throw new ServiceError("essa partida já terminou", 409);
+  }
+
+  if (room.phase === RoomPhase.Playing) {
+    return requestToJoin({ room, name });
+  }
+
   if (name.length < 1 || name.length > 24) {
-    throw new ServiceError("nome invalido", 422);
+    throw new ServiceError("escolha um nome de 1 a 24 caracteres", 422);
   }
 
   const { count } = await client
@@ -148,7 +155,7 @@ export async function joinRoom(input: { code: string; name: string; isHost?: boo
     .eq("room_id", room.id);
 
   if ((count ?? 0) >= maxPlayers) {
-    throw new ServiceError(`a sala esta cheia (maximo ${maxPlayers})`, 409);
+    throw new ServiceError(`a sala está cheia (máximo de ${maxPlayers})`, 409);
   }
 
   const { data: lastSeat } = await client
@@ -162,7 +169,7 @@ export async function joinRoom(input: { code: string; name: string; isHost?: boo
   const seat = ((lastSeat?.seat as number | undefined) ?? 0) + 1;
 
   if (seat > maxPlayers) {
-    throw new ServiceError("a sala ja teve jogadores demais, crie uma nova", 409);
+    throw new ServiceError("essa sala já teve jogadores demais, crie uma nova", 409);
   }
 
   const { data: player, error } = await client
@@ -175,8 +182,8 @@ export async function joinRoom(input: { code: string; name: string; isHost?: boo
     if (error.code === "23505") {
       throw new ServiceError(
         error.message.includes("seat")
-          ? "nao ha assento livre nesta sala"
-          : "esse nome ja esta na mesa",
+          ? "não há assento livre nesta sala"
+          : "esse nome já está na mesa",
         409,
       );
     }
@@ -193,6 +200,7 @@ export async function joinRoom(input: { code: string; name: string; isHost?: boo
   await recordEvent({ roomId: room.id, type: EventType.PlayerJoined, actorId: player.id });
 
   return {
+    pending: false as const,
     playerId: player.id as string,
     accessToken,
     roomId: room.id,
@@ -207,11 +215,11 @@ export async function startMatch(input: { code: string; token: string }) {
   const me = await loadPlayerByToken(room, input.token);
 
   if (!me.players.is_host) {
-    throw new ServiceError("apenas o host pode comecar", 403);
+    throw new ServiceError("só o host pode começar a partida", 403);
   }
 
   if (room.phase !== RoomPhase.Lobby) {
-    throw new ServiceError("a partida ja comecou", 409);
+    throw new ServiceError("a partida já começou", 409);
   }
 
   const { data: players } = await client
@@ -304,11 +312,11 @@ export async function armCard(input: { code: string; token: string; cardId: stri
   const now = new Date();
 
   if (room.phase !== RoomPhase.Playing) {
-    throw new ServiceError("a partida nao esta em andamento", 409);
+    throw new ServiceError("a partida não está em andamento", 409);
   }
 
   if (isArmed(me.armed_until, now)) {
-    throw new ServiceError("voce ja tem uma carta armada", 409);
+    throw new ServiceError("você já tem uma carta armada", 409);
   }
 
   const { data: owned } = await client
@@ -319,7 +327,7 @@ export async function armCard(input: { code: string; token: string; cardId: stri
     .maybeSingle();
 
   if (!owned) {
-    throw new ServiceError("essa carta nao esta na sua mao", 409);
+    throw new ServiceError("essa carta não está na sua mão", 409);
   }
 
   const armedUntil = new Date(now.getTime() + room.arm_window_seconds * 1000).toISOString();
@@ -343,11 +351,11 @@ export async function claimCard(input: { code: string; token: string }) {
   const now = new Date();
 
   if (room.phase !== RoomPhase.Playing) {
-    throw new ServiceError("a partida nao esta em andamento", 409);
+    throw new ServiceError("a partida não está em andamento", 409);
   }
 
   if (!me.armed_card_id || !isArmed(me.armed_until, now)) {
-    throw new ServiceError("arme uma carta antes de reivindicar", 409);
+    throw new ServiceError("arme uma carta antes de dizer que encaixou", 409);
   }
 
   const cardId = me.armed_card_id;
@@ -364,7 +372,7 @@ export async function claimCard(input: { code: string; token: string }) {
   }
 
   if (!released || released.length === 0) {
-    throw new ServiceError("essa carta ja foi reivindicada", 409);
+    throw new ServiceError("essa carta já foi reivindicada", 409);
   }
 
   const { data: removed } = await client
@@ -375,7 +383,7 @@ export async function claimCard(input: { code: string; token: string }) {
     .select("card_id");
 
   if (!removed || removed.length === 0) {
-    throw new ServiceError("essa carta nao esta mais na sua mao", 409);
+    throw new ServiceError("essa carta não está mais na sua mão", 409);
   }
 
   await client.rpc("sync_hand_count", { p_player: me.player_id });
@@ -418,15 +426,15 @@ export async function accusePlayer(input: { code: string; token: string; accused
   const now = new Date();
 
   if (room.phase !== RoomPhase.Playing) {
-    throw new ServiceError("a partida nao esta em andamento", 409);
+    throw new ServiceError("a partida não está em andamento", 409);
   }
 
   if (input.accusedId === me.player_id) {
-    throw new ServiceError("nao da para acusar voce mesmo", 422);
+    throw new ServiceError("não dá para acusar você mesmo", 422);
   }
 
   if (isAccusationBlocked(me.accusation_blocked_until, now)) {
-    throw new ServiceError("aguarde antes de acusar de novo", 429);
+    throw new ServiceError("espere um pouco antes de acusar de novo", 429);
   }
 
   const { data: accusedSecret } = await client
@@ -437,7 +445,7 @@ export async function accusePlayer(input: { code: string; token: string; accused
     .maybeSingle();
 
   if (!accusedSecret) {
-    throw new ServiceError("jogador nao esta nesta sala", 404);
+    throw new ServiceError("esse jogador não está nesta sala", 404);
   }
 
   const wasCorrect = isArmed(accusedSecret.armed_until as string | null, now);
@@ -517,15 +525,15 @@ export async function voteContest(input: {
     .maybeSingle();
 
   if (!claim) {
-    throw new ServiceError("reivindicacao nao encontrada", 404);
+    throw new ServiceError("reivindicação não encontrada", 404);
   }
 
   if (claim.status !== ClaimStatus.Pending) {
-    throw new ServiceError("essa reivindicacao ja foi resolvida", 409);
+    throw new ServiceError("essa reivindicação já foi resolvida", 409);
   }
 
   if (claim.player_id === me.player_id) {
-    throw new ServiceError("quem reivindicou nao vota", 422);
+    throw new ServiceError("quem reivindicou a carta não vota", 422);
   }
 
   const { error } = await client
@@ -776,11 +784,11 @@ export async function rematch(input: { code: string; token: string }) {
   const me = await loadPlayerByToken(room, input.token);
 
   if (!me.players.is_host) {
-    throw new ServiceError("apenas o host pode iniciar a revanche", 403);
+    throw new ServiceError("só o host pode abrir a revanche", 403);
   }
 
   if (room.phase !== RoomPhase.Finished) {
-    throw new ServiceError("a partida atual nao terminou", 409);
+    throw new ServiceError("a partida atual ainda não terminou", 409);
   }
 
   const { data: existing } = await client
@@ -828,15 +836,15 @@ export async function kickPlayer(input: { code: string; token: string; playerId:
   const me = await loadPlayerByToken(room, input.token);
 
   if (!me.players.is_host) {
-    throw new ServiceError("apenas o host pode remover jogadores", 403);
+    throw new ServiceError("só o host pode remover jogadores", 403);
   }
 
   if (input.playerId === me.player_id) {
-    throw new ServiceError("o host nao pode remover a si mesmo", 422);
+    throw new ServiceError("o host não pode remover a si mesmo", 422);
   }
 
   if (room.phase !== RoomPhase.Lobby) {
-    throw new ServiceError("so da para remover jogador antes de comecar", 409);
+    throw new ServiceError("só dá para remover jogador antes de começar", 409);
   }
 
   const { data: target } = await client
@@ -847,7 +855,7 @@ export async function kickPlayer(input: { code: string; token: string; playerId:
     .maybeSingle();
 
   if (!target) {
-    throw new ServiceError("jogador nao esta nesta sala", 404);
+    throw new ServiceError("esse jogador não está nesta sala", 404);
   }
 
   const { error } = await client.from("players").delete().eq("id", input.playerId);
@@ -857,4 +865,220 @@ export async function kickPlayer(input: { code: string; token: string; playerId:
   }
 
   return { removed: target.name as string };
+}
+
+async function requestToJoin(input: { room: RoomRow; name: string }) {
+  const client = serverClient();
+
+  if (input.name.length < 1 || input.name.length > 24) {
+    throw new ServiceError("escolha um nome de 1 a 24 caracteres", 422);
+  }
+
+  const { data: taken } = await client
+    .from("players")
+    .select("id")
+    .eq("room_id", input.room.id)
+    .ilike("name", input.name)
+    .maybeSingle();
+
+  if (taken) {
+    throw new ServiceError("esse nome já está na mesa", 409);
+  }
+
+  const { count } = await client
+    .from("players")
+    .select("id", { count: "exact", head: true })
+    .eq("room_id", input.room.id);
+
+  if ((count ?? 0) >= maxPlayers) {
+    throw new ServiceError(`a sala está cheia (máximo de ${maxPlayers} jogadores)`, 409);
+  }
+
+  const { data: open } = await client
+    .from("join_requests")
+    .select("id")
+    .eq("room_id", input.room.id)
+    .eq("status", "PENDING")
+    .ilike("name", input.name)
+    .maybeSingle();
+
+  if (open) {
+    throw new ServiceError("você já pediu para entrar, espere a resposta do host", 409);
+  }
+
+  const { data: created, error } = await client
+    .from("join_requests")
+    .insert({ room_id: input.room.id, name: input.name })
+    .select()
+    .single();
+
+  if (error) {
+    throw new ServiceError(error.message, 500);
+  }
+
+  const requestToken = createToken();
+
+  await client
+    .from("join_request_secrets")
+    .insert({ request_id: created.id, request_token: requestToken });
+
+  return {
+    pending: true as const,
+    requestId: created.id as string,
+    requestToken,
+    code: input.room.code,
+    crewId: input.room.crew_id,
+  };
+}
+
+export async function joinStatus(input: { code: string; requestToken: string }) {
+  const client = serverClient();
+  const room = await loadRoom(input.code);
+
+  const { data, error } = await client
+    .from("join_request_secrets")
+    .select("request_id, granted_access_token, join_requests!inner(id, room_id, name, status, player_id)")
+    .eq("request_token", input.requestToken)
+    .maybeSingle();
+
+  if (error) {
+    throw new ServiceError(error.message, 500);
+  }
+
+  if (!data) {
+    throw new ServiceError("pedido não encontrado", 404);
+  }
+
+  const requestRow = (data as unknown as {
+    granted_access_token: string | null;
+    join_requests: { room_id: string; name: string; status: string; player_id: string | null };
+  }).join_requests;
+
+  if (requestRow.room_id !== room.id) {
+    throw new ServiceError("pedido não pertence a esta sala", 404);
+  }
+
+  return {
+    status: requestRow.status,
+    name: requestRow.name,
+    playerId: requestRow.player_id,
+    accessToken: (data as unknown as { granted_access_token: string | null })
+      .granted_access_token,
+    code: room.code,
+    crewId: room.crew_id,
+  };
+}
+
+export async function pendingRequests(input: { code: string; token: string }) {
+  const room = await loadRoom(input.code);
+  const me = await loadPlayerByToken(room, input.token);
+
+  if (!me.players.is_host) {
+    return { requests: [] };
+  }
+
+  const { data } = await serverClient()
+    .from("join_requests")
+    .select("id, name, created_at")
+    .eq("room_id", room.id)
+    .eq("status", "PENDING")
+    .order("created_at");
+
+  return {
+    requests: (data ?? []).map((row) => ({
+      id: row.id as string,
+      name: row.name as string,
+      createdAt: row.created_at as string,
+    })),
+  };
+}
+
+export async function resolveJoinRequest(input: {
+  code: string;
+  token: string;
+  requestId: string;
+  approve: boolean;
+}) {
+  const client = serverClient();
+  const room = await loadRoom(input.code);
+  const me = await loadPlayerByToken(room, input.token);
+
+  if (!me.players.is_host) {
+    throw new ServiceError("só o host decide quem entra", 403);
+  }
+
+  const { data: claimed, error: claimError } = await client
+    .from("join_requests")
+    .update({ status: input.approve ? "APPROVED" : "REJECTED", resolved_at: new Date().toISOString() })
+    .eq("id", input.requestId)
+    .eq("room_id", room.id)
+    .eq("status", "PENDING")
+    .select()
+    .maybeSingle();
+
+  if (claimError) {
+    throw new ServiceError(claimError.message, 500);
+  }
+
+  if (!claimed) {
+    throw new ServiceError("esse pedido já foi respondido", 409);
+  }
+
+  if (!input.approve) {
+    return { approved: false as const, name: claimed.name as string };
+  }
+
+  const { data: lastSeat } = await client
+    .from("players")
+    .select("seat")
+    .eq("room_id", room.id)
+    .order("seat", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  const seat = ((lastSeat?.seat as number | undefined) ?? 0) + 1;
+
+  if (seat > maxPlayers) {
+    await client.from("join_requests").update({ status: "REJECTED" }).eq("id", input.requestId);
+
+    throw new ServiceError("não há assento livre nesta sala", 409);
+  }
+
+  const { data: player, error: playerError } = await client
+    .from("players")
+    .insert({ room_id: room.id, name: claimed.name, seat })
+    .select()
+    .single();
+
+  if (playerError) {
+    await client.from("join_requests").update({ status: "REJECTED" }).eq("id", input.requestId);
+
+    throw new ServiceError("esse nome já está na mesa", 409);
+  }
+
+  const accessToken = createToken();
+
+  await client
+    .from("player_secrets")
+    .insert({ player_id: player.id, room_id: room.id, access_token: accessToken });
+
+  await client.rpc("draw_penalty_cards", {
+    p_room: room.id,
+    p_player: player.id,
+    p_count: room.initial_hand_size,
+  });
+
+  await client
+    .from("join_requests")
+    .update({ player_id: player.id })
+    .eq("id", input.requestId);
+
+  await client
+    .from("join_request_secrets")
+    .update({ granted_access_token: accessToken })
+    .eq("request_id", input.requestId);
+
+  await recordEvent({ roomId: room.id, type: EventType.PlayerJoined, actorId: player.id });
+
+  return { approved: true as const, name: claimed.name as string, playerId: player.id as string };
 }
