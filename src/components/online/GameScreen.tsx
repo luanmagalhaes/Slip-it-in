@@ -6,6 +6,7 @@ import { HandPanel } from "@/components/online/HandPanel";
 import { TablePanel } from "@/components/online/TablePanel";
 import { SlotInsertOverlay } from "@/components/cards/SlotInsertOverlay";
 import { Screen } from "@/components/ui/Screen";
+import { useClipboard } from "@/hooks/useClipboard";
 import { Wordmark } from "@/components/ui/Wordmark";
 import { cardById } from "@/data/deck/cardIndex";
 import { ClaimStatus, type ClaimRow, type EventRow, type PlayerRow } from "@/types/room";
@@ -49,6 +50,7 @@ export function GameScreen({
   onInsertFinished,
 }: GameScreenProps) {
   const [tab, setTab] = useState<Tab>("HAND");
+  const { copy, copied } = useClipboard();
   const slotCount = players.reduce((total, player) => total + player.completed_count, 0);
   const pendingClaim = claims.find(
     (claim) =>
@@ -63,9 +65,14 @@ export function GameScreen({
       <Screen className={pendingClaim ? "pb-64" : ""}>
         <header className="mb-5 flex items-center justify-between">
           <Wordmark size="sm" className="opacity-55" />
-          <span className="font-display rounded-full bg-violet-950/60 px-3 py-1 text-sm tracking-[0.18em] text-violet-200">
-            {code}
-          </span>
+          <button
+            type="button"
+            onClick={() => void copy(code)}
+            aria-label={`Copiar o código da sala ${code}`}
+            className="tap-shrink font-display rounded-full bg-violet-950/60 px-3 py-1 text-sm tracking-[0.18em] text-violet-200 active:scale-95"
+          >
+            {copied ? "copiado!" : code}
+          </button>
         </header>
 
         <div className="mb-5 grid grid-cols-2 gap-1.5 rounded-2xl bg-violet-950/60 p-1.5">

@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import { Button } from "@/components/ui/Button";
+import { RoomCodeCard } from "@/components/online/RoomCodeCard";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import type { PlayerRow, RoomRow } from "@/types/room";
@@ -27,27 +27,7 @@ export function LobbyScreen({
   onScoreboard,
   onLeave,
 }: LobbyScreenProps) {
-  const [copied, setCopied] = useState(false);
   const enough = players.length >= 3;
-
-  const share = async () => {
-    const url = `${window.location.origin}/?join=${room.code}`;
-    const text = `Bora jogar Slip It In. Código ${room.code}: ${url}`;
-
-    try {
-      if (navigator.share) {
-        await navigator.share({ title: "Slip It In", text, url });
-
-        return;
-      }
-
-      await navigator.clipboard.writeText(url);
-      setCopied(true);
-      window.setTimeout(() => setCopied(false), 2200);
-    } catch {
-      setCopied(false);
-    }
-  };
 
   return (
     <Screen
@@ -71,19 +51,7 @@ export function LobbyScreen({
     >
       <ScreenHeader title="Sala aberta" subtitle="Mande o código pra galera." onBack={onLeave} />
 
-      <button
-        type="button"
-        onClick={share}
-        className="tap-shrink edge-raised gradient-mint mb-3 w-full rounded-[1.75rem] px-6 py-5 text-center text-ink active:scale-[0.99]"
-      >
-        <span className="block text-xs font-bold uppercase tracking-[0.2em] opacity-70">
-          Código da sala
-        </span>
-        <span className="font-display mt-1 block text-5xl tracking-[0.22em]">{room.code}</span>
-        <span className="font-game mt-2 block text-xs opacity-70">
-          {copied ? "Link copiado!" : "Toque para compartilhar"}
-        </span>
-      </button>
+      <RoomCodeCard code={room.code} />
 
       <div className="mb-7">
         <Button variant="ghost" fullWidth onClick={onScoreboard}>

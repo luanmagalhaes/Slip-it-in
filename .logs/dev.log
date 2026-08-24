@@ -6,10 +6,8 @@
 - Local:         http://localhost:1000
 - Network:       http://192.168.0.8:1000
 - Environments: .env.local
-✓ Ready in 822ms
-✓ Running next.config.ts took 31ms
+✓ Ready in 548ms
+✓ Running next.config.ts took 33ms
 
- GET /manifest.webmanifest 200 in 236ms (next.js: 217ms, application-code: 19ms)
- GET /manifest.webmanifest 200 in 8ms (next.js: 2ms, application-code: 6ms)
- GET /manifest.webmanifest 200 in 4ms (next.js: 1.2ms, application-code: 3ms)
- GET / 200 in 232ms (next.js: 55ms, application-code: 177ms)
+ POST /api/rooms 200 in 10.4s (next.js: 3.5s, application-code: 6.9s)
+ GET / 200 in 5.6s (next.js: 1116ms, application-code: 4.5s)
