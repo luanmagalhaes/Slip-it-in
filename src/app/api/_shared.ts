@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { ServiceError } from "@/lib/game/online/service";
 
+const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 export function playerToken(request: Request): string {
   const token = request.headers.get("x-player-token");
 
@@ -11,6 +13,16 @@ export function playerToken(request: Request): string {
   return token;
 }
 
+export function requiredId(value: unknown, label: string): string {
+  const text = typeof value === "string" ? value.trim() : "";
+
+  if (!uuidPattern.test(text)) {
+    throw new ServiceError(`${label} inválido`, 422);
+  }
+
+  return text;
+}
+
 export async function handle<T>(action: () => Promise<T>) {
   try {
     return NextResponse.json(await action());
@@ -19,8 +31,8 @@ export async function handle<T>(action: () => Promise<T>) {
       return NextResponse.json({ error: error.message }, { status: error.status });
     }
 
-    const message = error instanceof Error ? error.message : "algo deu errado, tente de novo";
+    console.error("erro nao tratado na rota", error);
 
-    return NextResponse.json({ error: message }, { status: 500 });
+    return NextResponse.json({ error: "algo deu errado, tente de novo" }, { status: 500 });
   }
 }

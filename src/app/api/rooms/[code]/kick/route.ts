@@ -1,4 +1,4 @@
-import { handle, playerToken } from "@/app/api/_shared";
+import { handle, playerToken, requiredId } from "@/app/api/_shared";
 import { kickPlayer } from "@/lib/game/online/service";
 
 export async function POST(request: Request, context: { params: Promise<{ code: string }> }) {
@@ -9,7 +9,7 @@ export async function POST(request: Request, context: { params: Promise<{ code: 
     return kickPlayer({
       code,
       token: playerToken(request),
-      playerId: String(body.playerId ?? ""),
+      playerId: requiredId(body.playerId, "jogador"),
     });
   });
 }

@@ -1,4 +1,4 @@
-import { handle, playerToken } from "@/app/api/_shared";
+import { handle, playerToken, requiredId } from "@/app/api/_shared";
 import { pendingRequests, resolveJoinRequest } from "@/lib/game/online/service";
 
 export async function GET(request: Request, context: { params: Promise<{ code: string }> }) {
@@ -17,7 +17,7 @@ export async function POST(request: Request, context: { params: Promise<{ code: 
     return resolveJoinRequest({
       code,
       token: playerToken(request),
-      requestId: String(body.requestId ?? ""),
+      requestId: requiredId(body.requestId, "pedido"),
       approve: Boolean(body.approve),
     });
   });

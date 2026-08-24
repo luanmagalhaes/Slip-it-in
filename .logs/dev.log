@@ -6,25 +6,16 @@
 - Local:         http://localhost:1000
 - Network:       http://192.168.0.8:1000
 - Environments: .env.local
-✓ Ready in 446ms
-✓ Running next.config.ts took 27ms
+✓ Ready in 283ms
+✓ Running next.config.ts took 17ms
 
- POST /api/rooms 200 in 3.7s (next.js: 169ms, application-code: 3.5s)
- POST /api/rooms/DA9FUV/join 200 in 2.3s (next.js: 601ms, application-code: 1716ms)
- POST /api/rooms/DA9FUV/join 200 in 2.6s (next.js: 4ms, application-code: 2.6s)
- POST /api/rooms/DA9FUV/start 200 in 3.2s (next.js: 698ms, application-code: 2.5s)
- POST /api/rooms/DA9FUV/join 200 in 1489ms (next.js: 4ms, application-code: 1485ms)
- GET /api/rooms/DA9FUV/join-status 200 in 17.8s (next.js: 16.4s, application-code: 1363ms)
-○ Compiling /api/rooms/[code]/requests ...
- GET /api/rooms/DA9FUV/requests 200 in 10.4s (next.js: 9.2s, application-code: 1291ms)
- POST /api/rooms/DA9FUV/join 200 in 1903ms (next.js: 8ms, application-code: 1894ms)
- POST /api/rooms/DA9FUV/join 409 in 909ms (next.js: 3ms, application-code: 906ms)
- POST /api/rooms/DA9FUV/requests 200 in 2.8s (next.js: 2ms, application-code: 2.8s)
- GET /api/rooms/DA9FUV/join-status 200 in 468ms (next.js: 3ms, application-code: 465ms)
- GET /api/rooms/DA9FUV/me 200 in 1104ms (next.js: 456ms, application-code: 649ms)
- POST /api/rooms/DA9FUV/requests 409 in 647ms (next.js: 1.6ms, application-code: 645ms)
- POST /api/rooms/DA9FUV/join 409 in 1252ms (next.js: 5ms, application-code: 1247ms)
- POST /api/rooms/DA9FUV/requests 500 in 768ms (next.js: 5ms, application-code: 763ms)
- GET /api/rooms/DA9FUV/join-status 401 in 8ms (next.js: 4ms, application-code: 4ms)
- POST /api/rooms/DA9FUV/join 409 in 458ms (next.js: 4ms, application-code: 454ms)
- GET /api/rooms/DA9FUV/join-status 404 in 440ms (next.js: 1.7ms, application-code: 438ms)
+ POST /api/rooms 200 in 3.3s (next.js: 176ms, application-code: 3.1s)
+ POST /api/rooms/RVPA6J/join 200 in 2.3s (next.js: 450ms, application-code: 1807ms)
+ POST /api/rooms/RVPA6J/join 200 in 1973ms (next.js: 2ms, application-code: 1971ms)
+ POST /api/rooms/RVPA6J/start 200 in 4.1s (next.js: 423ms, application-code: 3.7s)
+ POST /api/rooms/RVPA6J/join 200 in 1556ms (next.js: 5ms, application-code: 1552ms)
+ POST /api/rooms/RVPA6J/requests 200 in 1219ms (next.js: 507ms, application-code: 712ms)
+ GET /api/rooms/RVPA6J/join-status 200 in 877ms (next.js: 447ms, application-code: 430ms)
+ POST /api/rooms/RVPA6J/requests 422 in 4ms (next.js: 2ms, application-code: 1.7ms)
+ POST /api/rooms/RVPA6J/requests 422 in 3ms (next.js: 1.2ms, application-code: 1.6ms)
+ POST /api/rooms/RVPA6J/accuse 422 in 460ms (next.js: 457ms, application-code: 3ms)

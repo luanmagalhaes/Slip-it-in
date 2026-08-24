@@ -1,4 +1,4 @@
-import { handle, playerToken } from "@/app/api/_shared";
+import { handle, playerToken, requiredId } from "@/app/api/_shared";
 import { voteContest } from "@/lib/game/online/service";
 
 export async function POST(request: Request, context: { params: Promise<{ code: string }> }) {
@@ -9,7 +9,7 @@ export async function POST(request: Request, context: { params: Promise<{ code: 
     return voteContest({
       code,
       token: playerToken(request),
-      claimId: String(body.claimId ?? ""),
+      claimId: requiredId(body.claimId, "reivindicação"),
       saidIt: Boolean(body.saidIt),
     });
   });
