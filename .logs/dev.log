@@ -4,85 +4,12 @@
 
 ▲ Next.js 16.3.2 (Turbopack)
 - Local:         http://localhost:1000
-- Network:       http://192.168.1.4:1000
+- Network:       http://192.168.0.8:1000
 - Environments: .env.local
-✓ Ready in 661ms
-✓ Running next.config.ts took 37ms
+✓ Ready in 822ms
+✓ Running next.config.ts took 31ms
 
-[browser] ./src/components/online/OnlineApp.tsx:15:1
-Error: Module not found: Can't resolve '@/hooks/useScoreboardController'
-  13 | import { useNow } from "@/hooks/useNow";
-  14 | import { useRoom } from "@/hooks/useRoom";
-> 15 | import { useScoreboardController } from "@/hooks/useScoreboardController";
-     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  16 | import { useSession } from "@/hooks/useSession";
-  17 | import { inviteCodeFromUrl } from "@/lib/session/storage";
-  18 | import { RoomPhase } from "@/types/room";
-
-Import map: aliased to relative './src/hooks/useScoreboardController' inside of [project]/
-
-Import trace:
-  Server Component:
-    ./src/components/online/OnlineApp.tsx
-    ./src/app/page.tsx
-
-https://nextjs.org/docs/messages/module-not-found 
- GET / 200 in 428ms (next.js: 202ms, application-code: 226ms)
- GET /api/rooms/XSP7QC/me 200 in 2.9s (next.js: 1382ms, application-code: 1517ms)
- POST /api/rooms 200 in 4.4s (next.js: 39ms, application-code: 4.3s)
- POST /api/rooms/5MV8FX/join 200 in 3.3s (next.js: 784ms, application-code: 2.6s)
- POST /api/rooms/5MV8FX/join 200 in 2.3s (next.js: 4ms, application-code: 2.3s)
- POST /api/rooms/5MV8FX/start 200 in 3.6s (next.js: 617ms, application-code: 3.0s)
- POST /api/rooms/5MV8FX/accuse 200 in 2.3s (next.js: 628ms, application-code: 1701ms)
- GET /api/rooms/5MV8FX/me 200 in 628ms (next.js: 4ms, application-code: 624ms)
- POST /api/rooms/5MV8FX/arm 200 in 1968ms (next.js: 881ms, application-code: 1088ms)
- POST /api/rooms/5MV8FX/claim 200 in 2.8s (next.js: 611ms, application-code: 2.2s)
- POST /api/rooms/5MV8FX/sweep 200 in 3.9s (next.js: 658ms, application-code: 3.3s)
- GET /api/rooms/5MV8FX/me 200 in 875ms (next.js: 4ms, application-code: 871ms)
- POST /api/rooms/5MV8FX/arm 200 in 903ms (next.js: 3ms, application-code: 899ms)
- POST /api/rooms/5MV8FX/claim 200 in 2.5s (next.js: 8ms, application-code: 2.5s)
- POST /api/rooms/5MV8FX/sweep 200 in 2.5s (next.js: 3ms, application-code: 2.5s)
- GET /api/rooms/5MV8FX/me 200 in 962ms (next.js: 4ms, application-code: 957ms)
- POST /api/rooms/5MV8FX/arm 200 in 1284ms (next.js: 4ms, application-code: 1280ms)
- POST /api/rooms/5MV8FX/claim 200 in 2.3s (next.js: 7ms, application-code: 2.3s)
- POST /api/rooms/5MV8FX/sweep 200 in 2.9s (next.js: 3ms, application-code: 2.9s)
- GET /api/rooms/5MV8FX/me 200 in 733ms (next.js: 7ms, application-code: 726ms)
- POST /api/rooms/5MV8FX/arm 200 in 1175ms (next.js: 3ms, application-code: 1173ms)
- POST /api/rooms/5MV8FX/claim 200 in 3.3s (next.js: 3ms, application-code: 3.3s)
- POST /api/rooms/5MV8FX/sweep 200 in 3.7s (next.js: 3ms, application-code: 3.7s)
- GET /api/rooms/5MV8FX/me 200 in 1259ms (next.js: 4ms, application-code: 1255ms)
- POST /api/rooms/5MV8FX/arm 200 in 880ms (next.js: 3ms, application-code: 877ms)
- POST /api/rooms/5MV8FX/claim 200 in 2.6s (next.js: 3ms, application-code: 2.6s)
- POST /api/rooms/5MV8FX/sweep 200 in 3.6s (next.js: 3ms, application-code: 3.6s)
- GET /api/rooms/5MV8FX/me 200 in 631ms (next.js: 3ms, application-code: 628ms)
- GET /api/crews/8f6beb5c-f9bd-4ccc-9ee0-6b060d1c96ce 200 in 915ms (next.js: 700ms, application-code: 215ms)
- POST /api/rooms/5MV8FX/rematch 200 in 1699ms (next.js: 653ms, application-code: 1045ms)
- POST /api/rooms/5MV8FX/rematch 200 in 711ms (next.js: 3ms, application-code: 708ms)
- POST /api/rooms/ELMGTK/join 200 in 1866ms (next.js: 3ms, application-code: 1863ms)
- POST /api/rooms/ELMGTK/join 200 in 2.1s (next.js: 4ms, application-code: 2.1s)
- POST /api/rooms/ELMGTK/join 200 in 2.0s (next.js: 3ms, application-code: 2000ms)
- POST /api/rooms/ELMGTK/start 200 in 3.0s (next.js: 4ms, application-code: 3.0s)
- GET /api/rooms/ELMGTK/me 200 in 673ms (next.js: 5ms, application-code: 668ms)
- POST /api/rooms/ELMGTK/arm 200 in 895ms (next.js: 4ms, application-code: 891ms)
- POST /api/rooms/ELMGTK/claim 200 in 2.3s (next.js: 4ms, application-code: 2.3s)
- POST /api/rooms/ELMGTK/sweep 200 in 2.5s (next.js: 3ms, application-code: 2.5s)
- GET /api/rooms/ELMGTK/me 200 in 637ms (next.js: 3ms, application-code: 634ms)
- POST /api/rooms/ELMGTK/arm 200 in 842ms (next.js: 3ms, application-code: 839ms)
- POST /api/rooms/ELMGTK/claim 200 in 2.2s (next.js: 3ms, application-code: 2.2s)
- POST /api/rooms/ELMGTK/sweep 200 in 2.7s (next.js: 3ms, application-code: 2.7s)
- GET /api/rooms/ELMGTK/me 200 in 626ms (next.js: 3ms, application-code: 623ms)
- POST /api/rooms/ELMGTK/arm 200 in 1112ms (next.js: 3ms, application-code: 1109ms)
- POST /api/rooms/ELMGTK/claim 200 in 2.4s (next.js: 4ms, application-code: 2.4s)
- POST /api/rooms/ELMGTK/sweep 200 in 3.0s (next.js: 3ms, application-code: 3.0s)
- GET /api/rooms/ELMGTK/me 200 in 637ms (next.js: 5ms, application-code: 632ms)
- POST /api/rooms/ELMGTK/arm 200 in 1143ms (next.js: 3ms, application-code: 1140ms)
- POST /api/rooms/ELMGTK/claim 200 in 2.8s (next.js: 3ms, application-code: 2.8s)
- POST /api/rooms/ELMGTK/sweep 200 in 3.2s (next.js: 3ms, application-code: 3.2s)
- GET /api/rooms/ELMGTK/me 200 in 668ms (next.js: 3ms, application-code: 664ms)
- POST /api/rooms/ELMGTK/arm 200 in 889ms (next.js: 3ms, application-code: 886ms)
- POST /api/rooms/ELMGTK/claim 200 in 2.6s (next.js: 3ms, application-code: 2.6s)
- POST /api/rooms/ELMGTK/sweep 200 in 3.8s (next.js: 3ms, application-code: 3.8s)
- GET /api/rooms/ELMGTK/me 200 in 1035ms (next.js: 3ms, application-code: 1032ms)
- GET /api/crews/8f6beb5c-f9bd-4ccc-9ee0-6b060d1c96ce 200 in 567ms (next.js: 4ms, application-code: 563ms)
- POST /api/crews/8f6beb5c-f9bd-4ccc-9ee0-6b060d1c96ce/reset 200 in 914ms (next.js: 632ms, application-code: 283ms)
- GET /api/crews/8f6beb5c-f9bd-4ccc-9ee0-6b060d1c96ce 200 in 281ms (next.js: 3ms, application-code: 278ms)
+ GET /manifest.webmanifest 200 in 236ms (next.js: 217ms, application-code: 19ms)
+ GET /manifest.webmanifest 200 in 8ms (next.js: 2ms, application-code: 6ms)
+ GET /manifest.webmanifest 200 in 4ms (next.js: 1.2ms, application-code: 3ms)
+ GET / 200 in 232ms (next.js: 55ms, application-code: 177ms)
