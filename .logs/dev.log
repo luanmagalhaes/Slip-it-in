@@ -40,3 +40,6 @@
  GET /api/rooms/5DUT9D/me 200 in 631ms (next.js: 4ms, application-code: 627ms)
  GET /api/rooms/5DUT9D/result 200 in 1085ms (next.js: 648ms, application-code: 437ms)
  GET /api/rooms/5DUT9D/result 200 in 432ms (next.js: 3ms, application-code: 429ms)
+✓ Compiled in 37ms
+ GET / 200 in 575ms (next.js: 31ms, application-code: 544ms)
+ GET /api/rooms/XSP7QC/me 200 in 1487ms (next.js: 18ms, application-code: 1469ms)

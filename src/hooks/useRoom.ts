@@ -172,21 +172,30 @@ export function useRoom({ code, token }: UseRoomInput) {
     };
   }, [code, refreshAll]);
 
-  const stalePendingClaim = claims.some(
-    (claim) => claim.status === "PENDING" && new Date(claim.contest_ends_at).getTime() <= Date.now(),
-  );
+  const pendingDeadlines = claims
+    .filter((claim) => claim.status === "PENDING")
+    .map((claim) => claim.contest_ends_at)
+    .join("|");
 
   useEffect(() => {
-    if (!code || room?.phase !== "PLAYING" || !stalePendingClaim) {
+    if (!code || room?.phase !== "PLAYING" || !pendingDeadlines) {
       return;
     }
 
-    const timer = window.setTimeout(() => {
-      void api.sweep(code).catch(() => undefined);
-    }, sweepIntervalMs);
+    const sweepIfStale = () => {
+      const stale = pendingDeadlines
+        .split("|")
+        .some((deadline) => new Date(deadline).getTime() <= Date.now());
 
-    return () => window.clearTimeout(timer);
-  }, [code, room?.phase, stalePendingClaim]);
+      if (stale) {
+        void api.sweep(code).catch(() => undefined);
+      }
+    };
+
+    const timer = window.setInterval(sweepIfStale, sweepIntervalMs);
+
+    return () => window.clearInterval(timer);
+  }, [code, room?.phase, pendingDeadlines]);
 
   return {
     room,
