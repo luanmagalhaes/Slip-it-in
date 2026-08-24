@@ -82,6 +82,21 @@ export const api = {
       token,
     ),
 
+  result: (code: string) =>
+    request<{
+      code: string;
+      phase: string;
+      winnerPlayerId: string | null;
+      players: Array<{
+        name: string;
+        cardsCompleted: number;
+        correctAccusations: number;
+        wrongAccusations: number;
+        timesCaught: number;
+        isWinner: boolean;
+      }>;
+    }>(`/api/rooms/${code}/result`, { method: "GET" }),
+
   sweep: (code: string) =>
     request<{ resolved: Array<{ claimId: string; status: string }>; winnerId: string | null }>(
       `/api/rooms/${code}/sweep`,

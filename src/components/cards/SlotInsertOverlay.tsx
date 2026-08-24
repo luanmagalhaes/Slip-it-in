@@ -23,7 +23,9 @@ export function SlotInsertOverlay({ card, slotCountBefore, onFinished }: SlotIns
   const onFinishedRef = useRef(onFinished);
   const vibrate = useHaptics();
 
-  onFinishedRef.current = onFinished;
+  useEffect(() => {
+    onFinishedRef.current = onFinished;
+  }, [onFinished]);
 
   const finish = useCallback(() => {
     if (finishedRef.current) {

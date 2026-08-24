@@ -674,3 +674,31 @@ export async function sweepRoom(input: { code: string }) {
 
   return settleClaims({ code: input.code });
 }
+
+export async function matchSummary(input: { code: string }) {
+  const client = serverClient();
+  const room = await loadRoom(input.code);
+
+  const [{ data: players }, { data: accusations }] = await Promise.all([
+    client.from("players").select("id, name, completed_count").eq("room_id", room.id).order("seat"),
+    client.from("accusations").select("accuser_id, accused_id, was_correct").eq("room_id", room.id),
+  ]);
+
+  const rows = accusations ?? [];
+
+  return {
+    code: room.code,
+    phase: room.phase,
+    winnerPlayerId: room.winner_player_id,
+    players: (players ?? []).map((player) => ({
+      name: player.name as string,
+      cardsCompleted: (player.completed_count as number) ?? 0,
+      correctAccusations: rows.filter((row) => row.accuser_id === player.id && row.was_correct)
+        .length,
+      wrongAccusations: rows.filter((row) => row.accuser_id === player.id && !row.was_correct)
+        .length,
+      timesCaught: rows.filter((row) => row.accused_id === player.id && row.was_correct).length,
+      isWinner: room.winner_player_id === player.id,
+    })),
+  };
+}

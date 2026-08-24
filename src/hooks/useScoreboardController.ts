@@ -1,77 +1,52 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useSyncExternalStore } from "react";
+import { applyOnlineMatch, type OnlineMatchSummary } from "@/lib/scoreboard/applyOnlineMatch";
 import {
-  applyMatchToScoreboard,
   clearPlayers,
   removePlayer,
   resetPoints,
   updateRules,
   upsertPlayer,
 } from "@/lib/scoreboard/scoreboardOperations";
-import { emptyScoreboard, loadScoreboard, saveScoreboard } from "@/lib/scoreboard/scoreboardStorage";
-import type { Match } from "@/types/match";
+import {
+  scoreboardServerSnapshot,
+  scoreboardSnapshot,
+  subscribeToScoreboard,
+  writeScoreboard,
+} from "@/lib/scoreboard/scoreboardStore";
 import type { Scoreboard, ScoringRules } from "@/types/scoreboard";
 
 export function useScoreboardController() {
-  const [scoreboard, setScoreboard] = useState<Scoreboard>(emptyScoreboard);
-  const [hydrated, setHydrated] = useState(false);
-
-  useEffect(() => {
-    setScoreboard(loadScoreboard());
-    setHydrated(true);
-  }, []);
-
-  useEffect(() => {
-    if (hydrated) {
-      saveScoreboard(scoreboard);
-    }
-  }, [scoreboard, hydrated]);
-
-  const addPlayer = useCallback((name: string) => {
-    setScoreboard((current) => upsertPlayer(current, name));
-  }, []);
-
-  const deletePlayer = useCallback((playerId: string) => {
-    setScoreboard((current) => removePlayer(current, playerId));
-  }, []);
-
-  const resetAllPoints = useCallback(() => {
-    setScoreboard((current) => resetPoints(current));
-  }, []);
-
-  const removeAllPlayers = useCallback(() => {
-    setScoreboard((current) => clearPlayers(current));
-  }, []);
-
-  const setRules = useCallback((rules: ScoringRules) => {
-    setScoreboard((current) => updateRules(current, rules));
-  }, []);
-
-  const commitMatch = useCallback((match: Match) => {
-    setScoreboard((current) => applyMatchToScoreboard(current, match));
-  }, []);
-
-  return useMemo(
-    () => ({
-      scoreboard,
-      hydrated,
-      addPlayer,
-      deletePlayer,
-      resetAllPoints,
-      removeAllPlayers,
-      setRules,
-      commitMatch,
-    }),
-    [
-      scoreboard,
-      hydrated,
-      addPlayer,
-      deletePlayer,
-      resetAllPoints,
-      removeAllPlayers,
-      setRules,
-      commitMatch,
-    ],
+  const scoreboard = useSyncExternalStore(
+    subscribeToScoreboard,
+    scoreboardSnapshot,
+    scoreboardServerSnapshot,
   );
+
+  const mutate = useCallback((change: (current: Scoreboard) => Scoreboard) => {
+    writeScoreboard(change(scoreboardSnapshot()));
+  }, []);
+
+  return {
+    scoreboard,
+    addPlayer: useCallback(
+      (name: string) => mutate((current) => upsertPlayer(current, name)),
+      [mutate],
+    ),
+    deletePlayer: useCallback(
+      (playerId: string) => mutate((current) => removePlayer(current, playerId)),
+      [mutate],
+    ),
+    resetAllPoints: useCallback(() => mutate(resetPoints), [mutate]),
+    removeAllPlayers: useCallback(() => mutate(clearPlayers), [mutate]),
+    setRules: useCallback(
+      (rules: ScoringRules) => mutate((current) => updateRules(current, rules)),
+      [mutate],
+    ),
+    commitMatch: useCallback(
+      (summary: OnlineMatchSummary) => mutate((current) => applyOnlineMatch(current, summary)),
+      [mutate],
+    ),
+  };
 }

@@ -85,7 +85,10 @@ export function useRoom({ code, token }: UseRoomInput) {
         .eq("room_id", roomRow.id)
         .order("sequence", { ascending: false })
         .limit(40),
-      client.from("contest_votes").select("claim_id, voter_id"),
+      client
+        .from("contest_votes")
+        .select("claim_id, voter_id, claims!inner(room_id)")
+        .eq("claims.room_id", roomRow.id),
     ]);
 
     setPlayers((playerRows.data ?? []) as PlayerRow[]);
@@ -108,7 +111,11 @@ export function useRoom({ code, token }: UseRoomInput) {
       return;
     }
 
-    void refreshAll();
+    const timer = window.setTimeout(() => {
+      void refreshAll();
+    }, 0);
+
+    return () => window.clearTimeout(timer);
   }, [code, refreshAll]);
 
   useEffect(() => {
@@ -165,17 +172,21 @@ export function useRoom({ code, token }: UseRoomInput) {
     };
   }, [code, refreshAll]);
 
+  const stalePendingClaim = claims.some(
+    (claim) => claim.status === "PENDING" && new Date(claim.contest_ends_at).getTime() <= Date.now(),
+  );
+
   useEffect(() => {
-    if (!code || room?.phase !== "PLAYING" || !me?.isHost) {
+    if (!code || room?.phase !== "PLAYING" || !stalePendingClaim) {
       return;
     }
 
-    const timer = window.setInterval(() => {
+    const timer = window.setTimeout(() => {
       void api.sweep(code).catch(() => undefined);
     }, sweepIntervalMs);
 
-    return () => window.clearInterval(timer);
-  }, [code, room?.phase, me?.isHost]);
+    return () => window.clearTimeout(timer);
+  }, [code, room?.phase, stalePendingClaim]);
 
   return {
     room,

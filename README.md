@@ -55,7 +55,7 @@ Followed by a **30-second contest window**, where the table votes on whether you
 - ⚡ **Realtime table** — live feed, live accusations, no refreshing
 - 🃏 **400 original cards** across 10 categories
 - 🔞 **Two independent 18+ tiers** — 50 flirty and 50 explicit cards, each gated separately and kept out of the deck entirely when off
-- 🏆 **Persistent scoreboard** — up to 12 named players, resettable
+- 🏆 **Cross-match scoreboard** — points accumulate per player name on the device, with reset
 - 🎬 **Slot animation** — cards physically drop into the box, `transform`/`opacity` only, 60fps on cheap phones
 - ♿ **`prefers-reduced-motion`** respected throughout
 
@@ -179,7 +179,7 @@ The suite guards the rules that are easy to break by accident:
 - [x] Rooms, join codes, realtime table
 - [x] Arm / claim / contest flow end to end
 - [x] Deploy on Vercel
-- [ ] Cross-match scoreboard screen
+- [x] Cross-match scoreboard
 - [ ] Custom decks and card authoring
 - [ ] Match history and stats
 

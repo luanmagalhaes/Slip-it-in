@@ -4,161 +4,39 @@
 
 ▲ Next.js 16.3.2 (Turbopack)
 - Local:         http://localhost:1000
-- Network:       http://192.168.0.8:1000
+- Network:       http://192.168.1.4:1000
 - Environments: .env.local
-✓ Ready in 227ms
-✓ Running next.config.ts took 18ms
+✓ Ready in 621ms
+✓ Running next.config.ts took 39ms
 
- GET / 200 in 2.4s (next.js: 2.3s, application-code: 105ms)
- GET /api/rooms/DXBTVP/me 200 in 797ms (next.js: 709ms, application-code: 88ms)
- GET /api/rooms/DXBTVP/me 200 in 968ms (next.js: 12ms, application-code: 956ms)
- GET /api/rooms/DXBTVP/me 200 in 678ms (next.js: 3ms, application-code: 675ms)
- GET /api/rooms/DXBTVP/me 200 in 833ms (next.js: 2ms, application-code: 830ms)
- GET / 200 in 16ms (next.js: 3ms, application-code: 14ms)
- GET /api/rooms/DXBTVP/me 200 in 734ms (next.js: 2ms, application-code: 732ms)
- GET / 200 in 16ms (next.js: 1.1ms, application-code: 15ms)
- GET /api/rooms/DXBTVP/me 200 in 970ms (next.js: 2ms, application-code: 968ms)
- GET /api/rooms/DXBTVP/me 200 in 669ms (next.js: 2ms, application-code: 667ms)
- GET /api/rooms/DXBTVP/me 200 in 1024ms (next.js: 2ms, application-code: 1022ms)
- GET /api/rooms/DXBTVP/me 200 in 767ms (next.js: 3ms, application-code: 764ms)
- GET /api/rooms/DXBTVP/me 200 in 684ms (next.js: 2ms, application-code: 682ms)
- POST /api/rooms/DXBTVP/join 200 in 2.6s (next.js: 652ms, application-code: 1902ms)
- GET /api/rooms/DXBTVP/me 200 in 886ms (next.js: 2ms, application-code: 884ms)
- GET /api/rooms/DXBTVP/me 200 in 683ms (next.js: 2.0ms, application-code: 681ms)
- GET /api/rooms/DXBTVP/me 200 in 671ms (next.js: 1.9ms, application-code: 669ms)
- GET / 200 in 28ms (next.js: 9ms, application-code: 19ms)
-✓ Compiled in 28ms
- POST /api/rooms 200 in 3.1s (next.js: 51ms, application-code: 3.0s)
- POST /api/rooms/XSP7QC/join 200 in 1443ms (next.js: 2ms, application-code: 1441ms)
- POST /api/rooms/XSP7QC/join 200 in 1441ms (next.js: 1.5ms, application-code: 1439ms)
- POST /api/rooms/XSP7QC/join 200 in 1463ms (next.js: 1.6ms, application-code: 1461ms)
- POST /api/rooms/XSP7QC/join 200 in 1593ms (next.js: 1.6ms, application-code: 1591ms)
- POST /api/rooms/XSP7QC/start 200 in 3.5s (next.js: 429ms, application-code: 3.1s)
- GET /api/rooms/XSP7QC/me 200 in 719ms (next.js: 4ms, application-code: 715ms)
- GET /api/rooms/XSP7QC/me 200 in 699ms (next.js: 1.8ms, application-code: 697ms)
- POST /api/rooms/XSP7QC/arm 200 in 1297ms (next.js: 425ms, application-code: 872ms)
- POST /api/rooms/XSP7QC/claim 200 in 2.8s (next.js: 431ms, application-code: 2.4s)
- GET /?code=XSP7QC&token=5106195348394b418c8f824790e5aebb&name=Luan 200 in 47ms (next.js: 4ms, application-code: 43ms)
-[browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
-
-- A server/client branch `if (typeof window !== 'undefined')`.
-- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
-- Date formatting in a user's locale which doesn't match the server.
-- External changing data without sending a snapshot of it along with the HTML.
-- Invalid HTML tag nesting.
-
-It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
-
-https://react.dev/link/hydration-mismatch
-
-  ...
-    <HotReload globalError={[...]} webSocket={WebSocket} staticIndicatorState={{pathname:null, ...}}>
-      <AppDevOverlayErrorBoundary globalError={[...]}>
-        <ReplaySsrOnlyErrors>
-        <DevRootHTTPAccessFallbackBoundary>
-          <HTTPAccessFallbackBoundary notFound={<NotAllowedRootHTTPFallbackError>}>
-            <HTTPAccessFallbackErrorBoundary pathname="/" notFound={<NotAllowedRootHTTPFallbackError>} ...>
-              <RedirectBoundary>
-                <RedirectErrorBoundary router={{...}}>
-                  <Head>
-                  <__next_root_layout_boundary__>
-                    <SegmentViewNode type="layout" pagePath="layout.tsx">
-                      <SegmentTrieNode>
-                      <link>
-                      <script>
-                      <RootLayout>
-                        <html lang="pt-BR" className="anton_9e70...">
-                          <body
-                            className="min-h-full antialiased"
--                           cz-shortcut-listen="true"
-                          >
-                  ...
- 
- GET /api/rooms/XSP7QC/me 200 in 2.1s (next.js: 4ms, application-code: 2.1s)
- GET /api/rooms/XSP7QC/me 200 in 2.4s (next.js: 1736ms, application-code: 663ms)
- GET /api/rooms/XSP7QC/me 200 in 1553ms (next.js: 5ms, application-code: 1548ms)
- POST /api/rooms/XSP7QC/sweep 200 in 3.4s (next.js: 478ms, application-code: 2.9s)
- GET /api/rooms/XSP7QC/me 200 in 916ms (next.js: 24ms, application-code: 892ms)
- GET /api/rooms/XSP7QC/me 200 in 928ms (next.js: 26ms, application-code: 902ms)
- GET /api/rooms/XSP7QC/me 200 in 664ms (next.js: 6ms, application-code: 658ms)
- GET /api/rooms/XSP7QC/me 200 in 674ms (next.js: 13ms, application-code: 660ms)
- POST /api/rooms/XSP7QC/sweep 200 in 1654ms (next.js: 1.9ms, application-code: 1652ms)
- GET /api/rooms/XSP7QC/me 200 in 665ms (next.js: 7ms, application-code: 658ms)
- POST /api/rooms/XSP7QC/sweep 200 in 2.0s (next.js: 5ms, application-code: 2.0s)
- GET /api/rooms/XSP7QC/me 200 in 696ms (next.js: 22ms, application-code: 674ms)
- POST /api/rooms/XSP7QC/sweep 200 in 1629ms (next.js: 4ms, application-code: 1625ms)
- GET /api/rooms/XSP7QC/me 200 in 636ms (next.js: 8ms, application-code: 628ms)
- GET /api/rooms/XSP7QC/me 200 in 667ms (next.js: 24ms, application-code: 643ms)
- POST /api/rooms/XSP7QC/sweep 200 in 1851ms (next.js: 17ms, application-code: 1834ms)
- GET /api/rooms/XSP7QC/me 200 in 648ms (next.js: 8ms, application-code: 640ms)
- POST /api/rooms/XSP7QC/sweep 200 in 1670ms (next.js: 4ms, application-code: 1667ms)
- GET /api/rooms/XSP7QC/me 200 in 674ms (next.js: 6ms, application-code: 668ms)
- POST /api/rooms/XSP7QC/sweep 200 in 2.7s (next.js: 4ms, application-code: 2.7s)
- GET /api/rooms/XSP7QC/me 200 in 1015ms (next.js: 49ms, application-code: 966ms)
- POST /api/rooms/XSP7QC/sweep 200 in 1837ms (next.js: 8ms, application-code: 1829ms)
- GET /api/rooms/XSP7QC/me 200 in 693ms (next.js: 9ms, application-code: 685ms)
- GET /api/rooms/XSP7QC/me 200 in 900ms (next.js: 4ms, application-code: 896ms)
- POST /api/rooms/XSP7QC/sweep 200 in 2.1s (next.js: 20ms, application-code: 2.1s)
- GET /api/rooms/XSP7QC/me 200 in 742ms (next.js: 27ms, application-code: 715ms)
- POST /api/rooms/XSP7QC/sweep 200 in 2.1s (next.js: 8ms, application-code: 2.1s)
- GET / 200 in 12ms (next.js: 4ms, application-code: 9ms)
- GET /api/rooms/XSP7QC/me 200 in 652ms (next.js: 2ms, application-code: 650ms)
- POST /api/rooms/XSP7QC/accuse 200 in 2.5s (next.js: 478ms, application-code: 2.0s)
- GET /api/rooms/XSP7QC/me 200 in 746ms (next.js: 2ms, application-code: 744ms)
- GET /api/rooms/XSP7QC/me 200 in 952ms (next.js: 7ms, application-code: 946ms)
- POST /api/rooms/XSP7QC/sweep 200 in 1822ms (next.js: 18ms, application-code: 1804ms)
- GET /api/rooms/XSP7QC/me 200 in 661ms (next.js: 1.3ms, application-code: 660ms)
- GET /api/rooms/XSP7QC/me 200 in 643ms (next.js: 5ms, application-code: 638ms)
- GET /api/rooms/XSP7QC/me 200 in 672ms (next.js: 2ms, application-code: 670ms)
- POST /api/rooms/XSP7QC/sweep 200 in 1700ms (next.js: 8ms, application-code: 1693ms)
- GET /api/rooms/XSP7QC/me 200 in 661ms (next.js: 11ms, application-code: 650ms)
- GET / 200 in 23ms (next.js: 2ms, application-code: 21ms)
- GET /api/rooms/XSP7QC/me 200 in 667ms (next.js: 4ms, application-code: 663ms)
- POST /api/rooms/XSP7QC/sweep 200 in 1794ms (next.js: 5ms, application-code: 1789ms)
- POST /api/rooms/XSP7QC/arm 200 in 1038ms (next.js: 33ms, application-code: 1005ms)
- GET /api/rooms/XSP7QC/me 200 in 656ms (next.js: 13ms, application-code: 642ms)
- GET /api/rooms/XSP7QC/me 200 in 1304ms (next.js: 5ms, application-code: 1299ms)
- POST /api/rooms/XSP7QC/sweep 200 in 2.9s (next.js: 8ms, application-code: 2.9s)
- GET /api/rooms/XSP7QC/me 200 in 641ms (next.js: 15ms, application-code: 626ms)
- POST /api/rooms/XSP7QC/sweep 200 in 1860ms (next.js: 1.7ms, application-code: 1858ms)
- POST /api/rooms/XSP7QC/claim 200 in 2.4s (next.js: 5ms, application-code: 2.4s)
- GET /api/rooms/XSP7QC/me 200 in 1043ms (next.js: 18ms, application-code: 1026ms)
- GET /api/rooms/XSP7QC/me 200 in 654ms (next.js: 5ms, application-code: 649ms)
- GET /api/rooms/XSP7QC/me 200 in 635ms (next.js: 8ms, application-code: 627ms)
- GET /api/rooms/XSP7QC/me 200 in 655ms (next.js: 2ms, application-code: 652ms)
- GET /api/rooms/XSP7QC/me 200 in 652ms (next.js: 15ms, application-code: 637ms)
- GET /api/rooms/XSP7QC/me 200 in 663ms (next.js: 10ms, application-code: 653ms)
- GET /api/rooms/XSP7QC/me 200 in 678ms (next.js: 19ms, application-code: 659ms)
- POST /api/rooms/XSP7QC/sweep 200 in 1904ms (next.js: 3ms, application-code: 1900ms)
- GET /api/rooms/XSP7QC/me 200 in 652ms (next.js: 4ms, application-code: 647ms)
- GET /api/rooms/XSP7QC/me 200 in 880ms (next.js: 4ms, application-code: 877ms)
- POST /api/rooms/XSP7QC/sweep 200 in 1862ms (next.js: 4ms, application-code: 1858ms)
- GET /api/rooms/XSP7QC/me 200 in 1804ms (next.js: 3ms, application-code: 1801ms)
- POST /api/rooms/XSP7QC/sweep 200 in 2.0s (next.js: 1.4ms, application-code: 2.0s)
- GET /api/rooms/XSP7QC/me 200 in 736ms (next.js: 1.9ms, application-code: 734ms)
- POST /api/rooms/XSP7QC/sweep 200 in 1877ms (next.js: 3ms, application-code: 1874ms)
- GET /api/rooms/XSP7QC/me 200 in 782ms (next.js: 13ms, application-code: 769ms)
- POST /api/rooms/XSP7QC/sweep 200 in 1896ms (next.js: 13ms, application-code: 1883ms)
- GET /api/rooms/XSP7QC/me 200 in 676ms (next.js: 2ms, application-code: 674ms)
- POST /api/rooms/XSP7QC/sweep 200 in 2.6s (next.js: 11ms, application-code: 2.6s)
- GET /api/rooms/XSP7QC/me 200 in 888ms (next.js: 11ms, application-code: 877ms)
- GET /api/rooms/XSP7QC/me 200 in 644ms (next.js: 1.9ms, application-code: 643ms)
- GET /api/rooms/XSP7QC/me 200 in 667ms (next.js: 2ms, application-code: 665ms)
- POST /api/rooms/XSP7QC/sweep 200 in 1669ms (next.js: 20ms, application-code: 1649ms)
- POST /api/rooms/XSP7QC/sweep 200 in 1889ms (next.js: 7ms, application-code: 1882ms)
- POST /api/rooms/XSP7QC/sweep 200 in 1875ms (next.js: 4ms, application-code: 1871ms)
- POST /api/rooms/XSP7QC/sweep 200 in 1836ms (next.js: 3ms, application-code: 1833ms)
- POST /api/rooms/XSP7QC/sweep 200 in 1711ms (next.js: 4ms, application-code: 1708ms)
- POST /api/rooms/XSP7QC/sweep 200 in 1664ms (next.js: 2ms, application-code: 1662ms)
- POST /api/rooms/XSP7QC/sweep 200 in 1688ms (next.js: 7ms, application-code: 1681ms)
- POST /api/rooms/XSP7QC/sweep 200 in 1653ms (next.js: 1.5ms, application-code: 1651ms)
- POST /api/rooms/XSP7QC/sweep 200 in 1713ms (next.js: 2ms, application-code: 1711ms)
- POST /api/rooms/XSP7QC/sweep 200 in 1708ms (next.js: 1.8ms, application-code: 1706ms)
- POST /api/rooms/XSP7QC/sweep 200 in 1644ms (next.js: 3ms, application-code: 1641ms)
- POST /api/rooms/XSP7QC/sweep 200 in 1931ms (next.js: 12ms, application-code: 1919ms)
- POST /api/rooms/XSP7QC/sweep 200 in 2.9s (next.js: 5ms, application-code: 2.9s)
- POST /api/rooms/XSP7QC/sweep 200 in 10.8min (next.js: 3ms, application-code: 10.8min)
- POST /api/rooms/XSP7QC/sweep 200 in 2.5s (next.js: 2.0ms, application-code: 2.5s)
- POST /api/rooms/XSP7QC/sweep 200 in 4.0s (next.js: 8ms, application-code: 4.0s)
- POST /api/rooms/XSP7QC/sweep 200 in 2.6s (next.js: 5ms, application-code: 2.6s)
- POST /api/rooms/XSP7QC/sweep 200 in 2.3s (next.js: 6ms, application-code: 2.3s)
+○ Compiling / ...
+ GET / 200 in 13.5s (next.js: 8.4s, application-code: 5.1s)
+ POST /api/rooms 200 in 5.1s (next.js: 1282ms, application-code: 3.8s)
+ GET /api/rooms/XSP7QC/me 200 in 4.5s (next.js: 3.9s, application-code: 644ms)
+ POST /api/rooms/5DUT9D/join 200 in 3.8s (next.js: 2.4s, application-code: 1385ms)
+ POST /api/rooms/5DUT9D/join 200 in 1945ms (next.js: 7ms, application-code: 1938ms)
+ POST /api/rooms/5DUT9D/start 200 in 3.6s (next.js: 653ms, application-code: 2.9s)
+ POST /api/rooms/5DUT9D/accuse 200 in 2.7s (next.js: 626ms, application-code: 2.0s)
+ GET /api/rooms/5DUT9D/me 200 in 661ms (next.js: 5ms, application-code: 657ms)
+ POST /api/rooms/5DUT9D/arm 200 in 1486ms (next.js: 606ms, application-code: 880ms)
+ POST /api/rooms/5DUT9D/claim 200 in 2.8s (next.js: 586ms, application-code: 2.2s)
+ POST /api/rooms/5DUT9D/sweep 200 in 3.0s (next.js: 655ms, application-code: 2.4s)
+ GET /api/rooms/5DUT9D/me 200 in 628ms (next.js: 5ms, application-code: 623ms)
+ POST /api/rooms/5DUT9D/arm 200 in 847ms (next.js: 4ms, application-code: 842ms)
+ POST /api/rooms/5DUT9D/claim 200 in 2.2s (next.js: 5ms, application-code: 2.2s)
+ POST /api/rooms/5DUT9D/sweep 200 in 2.5s (next.js: 5ms, application-code: 2.5s)
+ GET /api/rooms/5DUT9D/me 200 in 694ms (next.js: 5ms, application-code: 689ms)
+ POST /api/rooms/5DUT9D/arm 200 in 874ms (next.js: 4ms, application-code: 870ms)
+ POST /api/rooms/5DUT9D/claim 200 in 2.8s (next.js: 3ms, application-code: 2.8s)
+ POST /api/rooms/5DUT9D/sweep 200 in 3.4s (next.js: 5ms, application-code: 3.4s)
+ GET /api/rooms/5DUT9D/me 200 in 1254ms (next.js: 3ms, application-code: 1251ms)
+ POST /api/rooms/5DUT9D/arm 200 in 873ms (next.js: 3ms, application-code: 869ms)
+ POST /api/rooms/5DUT9D/claim 200 in 2.5s (next.js: 3ms, application-code: 2.5s)
+ POST /api/rooms/5DUT9D/sweep 200 in 2.8s (next.js: 4ms, application-code: 2.8s)
+ GET /api/rooms/5DUT9D/me 200 in 660ms (next.js: 4ms, application-code: 656ms)
+ POST /api/rooms/5DUT9D/arm 200 in 1448ms (next.js: 3ms, application-code: 1445ms)
+ POST /api/rooms/5DUT9D/claim 200 in 2.3s (next.js: 3ms, application-code: 2.2s)
+ POST /api/rooms/5DUT9D/sweep 200 in 3.9s (next.js: 3ms, application-code: 3.8s)
+ GET /api/rooms/5DUT9D/me 200 in 631ms (next.js: 4ms, application-code: 627ms)
+ GET /api/rooms/5DUT9D/result 200 in 1085ms (next.js: 648ms, application-code: 437ms)
+ GET /api/rooms/5DUT9D/result 200 in 432ms (next.js: 3ms, application-code: 429ms)

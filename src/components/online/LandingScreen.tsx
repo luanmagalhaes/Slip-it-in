@@ -10,9 +10,15 @@ interface LandingScreenProps {
   onCreate: () => void;
   onJoin: () => void;
   onHowToPlay: () => void;
+  onScoreboard: () => void;
 }
 
-export function LandingScreen({ onCreate, onJoin, onHowToPlay }: LandingScreenProps) {
+export function LandingScreen({
+  onCreate,
+  onJoin,
+  onHowToPlay,
+  onScoreboard,
+}: LandingScreenProps) {
   const [pressed, setPressed] = useState(false);
 
   return (
@@ -51,9 +57,14 @@ export function LandingScreen({ onCreate, onJoin, onHowToPlay }: LandingScreenPr
         <Button variant="secondary" size="lg" fullWidth onClick={onJoin}>
           {copy.home.joinRoom}
         </Button>
-        <Button variant="ghost" fullWidth onClick={onHowToPlay}>
-          {copy.home.howToPlay}
-        </Button>
+        <div className="mt-1 grid grid-cols-2 gap-3">
+          <Button variant="ghost" fullWidth onClick={onHowToPlay}>
+            {copy.home.howToPlay}
+          </Button>
+          <Button variant="ghost" fullWidth onClick={onScoreboard}>
+            {copy.home.scoreboard}
+          </Button>
+        </div>
         <p className="mt-3 text-center text-xs text-violet-300/60">{copy.home.footNote}</p>
       </div>
     </div>

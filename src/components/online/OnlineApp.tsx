@@ -6,60 +6,34 @@ import { GameScreen } from "@/components/online/GameScreen";
 import { JoinRoomScreen } from "@/components/online/JoinRoomScreen";
 import { LandingScreen } from "@/components/online/LandingScreen";
 import { LobbyScreen } from "@/components/online/LobbyScreen";
+import { ScoreboardScreen } from "@/components/online/ScoreboardScreen";
 import { VictoryScreen } from "@/components/online/VictoryScreen";
 import { HowToPlayScreen } from "@/components/screens/HowToPlayScreen";
 import { api } from "@/lib/api/client";
 import { useNow } from "@/hooks/useNow";
 import { useRoom } from "@/hooks/useRoom";
+import { useScoreboardController } from "@/hooks/useScoreboardController";
 import { useSession } from "@/hooks/useSession";
+import { inviteCodeFromUrl } from "@/lib/session/storage";
 import { RoomPhase } from "@/types/room";
 
-type View = "LANDING" | "CREATE" | "JOIN" | "HOW_TO_PLAY";
+type View = "LANDING" | "CREATE" | "JOIN" | "HOW_TO_PLAY" | "SCOREBOARD";
 
 export function OnlineApp() {
-  const { session, ready, save, clear } = useSession();
-  const [view, setView] = useState<View>("LANDING");
+  const { session, save, clear } = useSession();
+  const [view, setView] = useState<View>(() => (inviteCodeFromUrl() ? "JOIN" : "LANDING"));
   const [busy, setBusy] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
   const [insertingCardId, setInsertingCardId] = useState<string | null>(null);
-  const [prefilledCode, setPrefilledCode] = useState("");
+  const [prefilledCode] = useState(inviteCodeFromUrl);
   const now = useNow();
+  const { scoreboard, resetAllPoints, removeAllPlayers, commitMatch } = useScoreboardController();
+  const [committedCode, setCommittedCode] = useState<string | null>(null);
 
   const { room, players, claims, events, me, myVotedClaimIds, loading, error, refreshAll } = useRoom({
     code: session?.code ?? null,
     token: session?.accessToken ?? null,
   });
-
-  useEffect(() => {
-    if (!ready) {
-      return;
-    }
-
-    const params = new URLSearchParams(window.location.search);
-    const code = params.get("code");
-    const token = params.get("token");
-    const invite = params.get("join");
-    const clearUrl = () =>
-      window.history.replaceState({}, "", window.location.pathname);
-
-    if (code && token && process.env.NODE_ENV !== "production") {
-      save({
-        code: code.toUpperCase(),
-        playerId: "",
-        accessToken: token,
-        name: params.get("name") ?? "Jogador",
-      });
-      clearUrl();
-
-      return;
-    }
-
-    if (invite) {
-      setPrefilledCode(invite.toUpperCase());
-      setView("JOIN");
-      clearUrl();
-    }
-  }, [ready, save]);
 
   useEffect(() => {
     if (!actionError) {
@@ -123,7 +97,7 @@ export function OnlineApp() {
     setView("LANDING");
   };
 
-  if (!ready || !session) {
+  if (!session) {
     if (view === "CREATE") {
       return (
         <CreateRoomScreen
@@ -151,11 +125,23 @@ export function OnlineApp() {
       return <HowToPlayScreen onBack={() => setView("LANDING")} />;
     }
 
+    if (view === "SCOREBOARD") {
+      return (
+        <ScoreboardScreen
+          scoreboard={scoreboard}
+          onBack={() => setView("LANDING")}
+          onResetPoints={resetAllPoints}
+          onClearPlayers={removeAllPlayers}
+        />
+      );
+    }
+
     return (
       <LandingScreen
         onCreate={() => setView("CREATE")}
         onJoin={() => setView("JOIN")}
         onHowToPlay={() => setView("HOW_TO_PLAY")}
+        onScoreboard={() => setView("SCOREBOARD")}
       />
     );
   }
@@ -185,7 +171,22 @@ export function OnlineApp() {
         players={players}
         winnerId={room.winner_player_id}
         myPlayerId={me?.playerId ?? session.playerId}
+        alreadySaved={committedCode === room.code}
+        onSave={async () => {
+          if (committedCode === room.code) {
+            return;
+          }
+
+          const summary = await api.result(room.code);
+
+          commitMatch({ code: summary.code, players: summary.players });
+          setCommittedCode(room.code);
+        }}
         onExit={leave}
+        onScoreboard={() => {
+          clear();
+          setView("SCOREBOARD");
+        }}
       />
     );
   }
