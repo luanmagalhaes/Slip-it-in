@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { Confetti } from "@/components/ui/Confetti";
 import { Button } from "@/components/ui/Button";
 import { Wordmark } from "@/components/ui/Wordmark";
@@ -11,24 +10,25 @@ interface VictoryScreenProps {
   players: PlayerRow[];
   winnerId: string | null;
   myPlayerId: string;
-  alreadySaved: boolean;
-  onSave: () => Promise<void>;
-  onExit: () => void;
+  isHost: boolean;
+  busy: boolean;
+  error: string | null;
+  onRematch: () => void;
   onScoreboard: () => void;
+  onExit: () => void;
 }
 
 export function VictoryScreen({
   players,
   winnerId,
   myPlayerId,
-  alreadySaved,
-  onSave,
-  onExit,
+  isHost,
+  busy,
+  error,
+  onRematch,
   onScoreboard,
+  onExit,
 }: VictoryScreenProps) {
-  const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(alreadySaved);
-  const [failed, setFailed] = useState(false);
   const winner = players.find((player) => player.id === winnerId);
   const iWon = winnerId === myPlayerId;
   const ranking = [...players].sort(
@@ -38,27 +38,13 @@ export function VictoryScreen({
       a.hand_count - b.hand_count,
   );
 
-  const save = async () => {
-    setSaving(true);
-    setFailed(false);
-
-    try {
-      await onSave();
-      setSaved(true);
-    } catch {
-      setFailed(true);
-    } finally {
-      setSaving(false);
-    }
-  };
-
   return (
-    <div className="gradient-stage relative flex min-h-dvh flex-col justify-between overflow-hidden px-6 pb-[calc(var(--safe-bottom)+1.5rem)] pt-[calc(var(--safe-top)+3rem)]">
+    <div className="gradient-stage relative flex min-h-dvh flex-col justify-between overflow-hidden px-6 pb-[calc(var(--safe-bottom)+1.5rem)] pt-[calc(var(--safe-top)+2.5rem)]">
       {iWon ? <Confetti /> : null}
 
       <div className="relative z-10 text-center">
         <Wordmark size="md" />
-        <h1 className="font-display mt-8 text-4xl leading-tight text-cream">
+        <h1 className="font-display mt-7 text-4xl leading-tight text-cream">
           {iWon ? copy.victory.title : `${winner?.name ?? "Alguém"} venceu`}
         </h1>
         <p className="mx-auto mt-3 max-w-[17rem] text-sm leading-relaxed text-violet-200">
@@ -66,7 +52,7 @@ export function VictoryScreen({
         </p>
       </div>
 
-      <ul className="relative z-10 flex flex-col gap-2">
+      <ul className="relative z-10 my-6 flex flex-col gap-2">
         {ranking.map((player, index) => (
           <li
             key={player.id}
@@ -81,31 +67,30 @@ export function VictoryScreen({
               {player.name}
               {player.id === myPlayerId ? " (você)" : ""}
             </span>
-            <span className="text-sm opacity-80">
-              {player.completed_count} encaixadas · {player.hand_count} na mão
-            </span>
+            <span className="text-sm opacity-80">{player.completed_count} encaixadas</span>
           </li>
         ))}
       </ul>
 
-      <div className="relative z-10 mt-6 flex flex-col gap-2.5">
-        {saved ? (
-          <Button variant="mint" size="lg" fullWidth onClick={onScoreboard}>
-            Ver o placar
+      <div className="relative z-10 flex flex-col gap-2.5">
+        {isHost ? (
+          <Button variant="mint" size="lg" fullWidth disabled={busy} onClick={onRematch}>
+            {busy ? "Abrindo..." : copy.victory.playAgain}
           </Button>
         ) : (
-          <Button variant="mint" size="lg" fullWidth disabled={saving} onClick={save}>
-            {saving ? "Salvando..." : copy.victory.saveAndExit}
-          </Button>
-        )}
-        <Button variant="secondary" fullWidth onClick={onExit}>
-          {saved ? "Sair" : "Sair sem salvar"}
-        </Button>
-        {failed ? (
-          <p className="text-center text-xs text-pink-soft">
-            Não deu para salvar no placar. Tente de novo.
+          <p className="pb-1 text-center text-sm text-violet-300">
+            O host pode abrir a revanche. O placar da mesa já foi somado.
           </p>
-        ) : null}
+        )}
+        <div className="flex gap-2.5">
+          <Button variant="secondary" fullWidth onClick={onScoreboard}>
+            {copy.home.scoreboard}
+          </Button>
+          <Button variant="ghost" fullWidth onClick={onExit}>
+            Sair
+          </Button>
+        </div>
+        {error ? <p className="text-center text-xs text-pink-soft">{error}</p> : null}
       </div>
     </div>
   );

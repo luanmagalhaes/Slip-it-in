@@ -97,6 +97,7 @@ export async function createRoom(input: {
   hostName: string;
   adultContentEnabled: boolean;
   hardContentEnabled: boolean;
+  crewId?: string | null;
 }) {
   const client = serverClient();
   const { data: code, error: codeError } = await client.rpc("generate_room_code");
@@ -111,6 +112,7 @@ export async function createRoom(input: {
       code,
       adult_content_enabled: input.adultContentEnabled,
       hard_content_enabled: input.adultContentEnabled && input.hardContentEnabled,
+      crew_id: input.crewId ?? crypto.randomUUID(),
     })
     .select()
     .single();
@@ -123,7 +125,7 @@ export async function createRoom(input: {
 
   await client.from("rooms").update({ host_player_id: joined.playerId }).eq("id", room.id);
 
-  return { ...joined, code: room.code as string };
+  return { ...joined, code: room.code as string, crewId: room.crew_id as string };
 }
 
 export async function joinRoom(input: { code: string; name: string; isHost?: boolean }) {
@@ -173,7 +175,13 @@ export async function joinRoom(input: { code: string; name: string; isHost?: boo
 
   await recordEvent({ roomId: room.id, type: EventType.PlayerJoined, actorId: player.id });
 
-  return { playerId: player.id as string, accessToken, roomId: room.id, code: room.code };
+  return {
+    playerId: player.id as string,
+    accessToken,
+    roomId: room.id,
+    code: room.code,
+    crewId: room.crew_id,
+  };
 }
 
 export async function startMatch(input: { code: string; token: string }) {
@@ -654,6 +662,7 @@ async function detectWinner(roomId: string): Promise<string | null> {
       .eq("id", roomId)
       .is("winner_player_id", null);
 
+    await client.rpc("apply_match_to_scoreboard", { p_room: roomId });
     await recordEvent({ roomId, type: EventType.MatchWon, actorId: candidate.id as string });
 
     return candidate.id as string;
@@ -701,4 +710,97 @@ export async function matchSummary(input: { code: string }) {
       isWinner: room.winner_player_id === player.id,
     })),
   };
+}
+
+export async function crewScoreboard(input: { crewId: string }) {
+  const { data, error } = await serverClient()
+    .from("scoreboard_entries")
+    .select(
+      "name, points, matches_played, matches_won, cards_completed, correct_accusations, times_caught, wrong_accusations",
+    )
+    .eq("owner_key", input.crewId)
+    .order("points", { ascending: false });
+
+  if (error) {
+    throw new ServiceError(error.message, 500);
+  }
+
+  return {
+    crewId: input.crewId,
+    entries: (data ?? []).map((row) => ({
+      name: row.name as string,
+      points: row.points as number,
+      matchesPlayed: row.matches_played as number,
+      matchesWon: row.matches_won as number,
+      cardsCompleted: row.cards_completed as number,
+      correctAccusations: row.correct_accusations as number,
+      timesCaught: row.times_caught as number,
+      wrongAccusations: row.wrong_accusations as number,
+    })),
+  };
+}
+
+export async function resetCrewScoreboard(input: { crewId: string }) {
+  const { error } = await serverClient()
+    .from("scoreboard_entries")
+    .delete()
+    .eq("owner_key", input.crewId);
+
+  if (error) {
+    throw new ServiceError(error.message, 500);
+  }
+
+  return { reset: true };
+}
+
+export async function rematch(input: { code: string; token: string }) {
+  const client = serverClient();
+  const room = await loadRoom(input.code);
+  const me = await loadPlayerByToken(room, input.token);
+
+  if (!me.players.is_host) {
+    throw new ServiceError("apenas o host pode iniciar a revanche", 403);
+  }
+
+  if (room.phase !== RoomPhase.Finished) {
+    throw new ServiceError("a partida atual nao terminou", 409);
+  }
+
+  const { data: existing } = await client
+    .from("rooms")
+    .select("id, code")
+    .eq("crew_id", room.crew_id)
+    .eq("phase", RoomPhase.Lobby)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (existing) {
+    return { code: existing.code as string, alreadyOpen: true };
+  }
+
+  const { data: code, error: codeError } = await client.rpc("generate_room_code");
+
+  if (codeError) {
+    throw new ServiceError(codeError.message, 500);
+  }
+
+  const { data: created, error: createError } = await client
+    .from("rooms")
+    .insert({
+      code,
+      adult_content_enabled: room.adult_content_enabled,
+      hard_content_enabled: room.hard_content_enabled,
+      initial_hand_size: room.initial_hand_size,
+      penalty_card_count: room.penalty_card_count,
+      crew_id: room.crew_id,
+    })
+    .select()
+    .single();
+
+  if (createError) {
+    throw new ServiceError(createError.message, 500);
+  }
+
+  return { code: created.code as string, alreadyOpen: false };
 }

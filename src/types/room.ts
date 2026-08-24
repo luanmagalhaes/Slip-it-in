@@ -38,6 +38,7 @@ export interface RoomRow {
   arm_window_seconds: number;
   contest_window_seconds: number;
   accusation_cooldown_seconds: number;
+  crew_id: string | null;
   host_player_id: string | null;
   winner_player_id: string | null;
   event_sequence: number;

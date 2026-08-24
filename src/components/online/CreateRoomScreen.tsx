@@ -10,18 +10,27 @@ import { copy } from "@/data/copy";
 interface CreateRoomScreenProps {
   busy: boolean;
   error: string | null;
+  canKeepCrew: boolean;
   onBack: () => void;
   onSubmit: (input: {
     hostName: string;
     adultContentEnabled: boolean;
     hardContentEnabled: boolean;
+    keepCrew: boolean;
   }) => void;
 }
 
-export function CreateRoomScreen({ busy, error, onBack, onSubmit }: CreateRoomScreenProps) {
+export function CreateRoomScreen({
+  busy,
+  error,
+  canKeepCrew,
+  onBack,
+  onSubmit,
+}: CreateRoomScreenProps) {
   const [name, setName] = useState("");
   const [adult, setAdult] = useState(false);
   const [hard, setHard] = useState(false);
+  const [keepCrew, setKeepCrew] = useState(canKeepCrew);
 
   return (
     <Screen
@@ -36,6 +45,7 @@ export function CreateRoomScreen({ busy, error, onBack, onSubmit }: CreateRoomSc
               hostName: name.trim(),
               adultContentEnabled: adult,
               hardContentEnabled: adult && hard,
+              keepCrew: canKeepCrew && keepCrew,
             })
           }
         >
@@ -71,6 +81,19 @@ export function CreateRoomScreen({ busy, error, onBack, onSubmit }: CreateRoomSc
             onToggle={() => setHard((current) => !current)}
           />
         </div>
+
+        {canKeepCrew ? (
+          <ContentToggle
+            title="Continuar o placar da mesa"
+            hint={
+              keepCrew
+                ? "Os pontos somam no mesmo placar da última vez."
+                : "Começa um placar novo, do zero."
+            }
+            enabled={keepCrew}
+            onToggle={() => setKeepCrew((current) => !current)}
+          />
+        ) : null}
 
         {error ? (
           <p className="rounded-2xl bg-pink-hot/15 p-4 text-sm text-pink-soft ring-1 ring-pink-hot/30">

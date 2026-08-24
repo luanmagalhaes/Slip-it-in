@@ -9,6 +9,7 @@ export async function POST(request: Request) {
       hostName: String(body.hostName ?? ""),
       adultContentEnabled: Boolean(body.adultContentEnabled),
       hardContentEnabled: Boolean(body.hardContentEnabled),
+      crewId: typeof body.crewId === "string" ? body.crewId : null,
     });
   });
 }

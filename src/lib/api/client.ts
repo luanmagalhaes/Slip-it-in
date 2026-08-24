@@ -23,6 +23,18 @@ export interface JoinResponse {
   playerId: string;
   accessToken: string;
   code: string;
+  crewId: string | null;
+}
+
+export interface CrewEntry {
+  name: string;
+  points: number;
+  matchesPlayed: number;
+  matchesWon: number;
+  cardsCompleted: number;
+  correctAccusations: number;
+  timesCaught: number;
+  wrongAccusations: number;
 }
 
 export interface MyStateResponse {
@@ -40,7 +52,21 @@ export const api = {
     hostName: string;
     adultContentEnabled: boolean;
     hardContentEnabled: boolean;
+    crewId?: string | null;
   }) => request<JoinResponse>("/api/rooms", { method: "POST", body: JSON.stringify(body) }),
+
+  crew: (crewId: string) =>
+    request<{ crewId: string; entries: CrewEntry[] }>(`/api/crews/${crewId}`, { method: "GET" }),
+
+  resetCrew: (crewId: string) =>
+    request<{ reset: boolean }>(`/api/crews/${crewId}/reset`, { method: "POST" }),
+
+  rematch: (code: string, token: string) =>
+    request<{ code: string; alreadyOpen: boolean }>(
+      `/api/rooms/${code}/rematch`,
+      { method: "POST" },
+      token,
+    ),
 
   joinRoom: (code: string, name: string) =>
     request<JoinResponse>(`/api/rooms/${code}/join`, {

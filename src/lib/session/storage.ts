@@ -3,9 +3,11 @@ export interface Session {
   playerId: string;
   accessToken: string;
   name: string;
+  crewId?: string | null;
 }
 
 const storageKey = "slip-it-in.session";
+const crewKey = "slip-it-in.crew";
 const listeners = new Set<() => void>();
 
 let cachedRaw: string | null = null;
@@ -77,6 +79,34 @@ function bootstrapFromUrl() {
   }
 
   window.history.replaceState({}, "", window.location.pathname);
+}
+
+export function rememberedCrewId(): string | null {
+  try {
+    return window.localStorage.getItem(crewKey);
+  } catch {
+    return null;
+  }
+}
+
+export function rememberCrewId(crewId: string | null) {
+  if (!crewId) {
+    return;
+  }
+
+  try {
+    window.localStorage.setItem(crewKey, crewId);
+  } catch {
+    return;
+  }
+}
+
+export function forgetCrewId() {
+  try {
+    window.localStorage.removeItem(crewKey);
+  } catch {
+    return;
+  }
 }
 
 export function inviteCodeFromUrl(): string {
