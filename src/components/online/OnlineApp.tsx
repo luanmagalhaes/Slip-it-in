@@ -14,7 +14,14 @@ import { useCrewScoreboard } from "@/hooks/useCrewScoreboard";
 import { useNow } from "@/hooks/useNow";
 import { useRoom } from "@/hooks/useRoom";
 import { useSession } from "@/hooks/useSession";
-import { inviteCodeFromUrl, rememberCrewId, rememberedCrewId } from "@/lib/session/storage";
+import {
+  forgetSeat,
+  inviteCodeFromUrl,
+  recentSeats,
+  rememberCrewId,
+  rememberedCrewId,
+  seatFor,
+} from "@/lib/session/storage";
 import { RoomPhase } from "@/types/room";
 
 type View = "LANDING" | "CREATE" | "JOIN" | "HOW_TO_PLAY" | "SCOREBOARD";
@@ -95,6 +102,22 @@ export function OnlineApp() {
 
   const handleJoin = (input: { code: string; name: string }) =>
     run(async () => {
+      const known = seatFor(input.code, input.name);
+
+      if (known) {
+        rememberCrewId(known.crewId);
+        save({
+          code: known.code,
+          playerId: known.playerId,
+          accessToken: known.accessToken,
+          name: known.name,
+          crewId: known.crewId,
+        });
+        setView("LANDING");
+
+        return;
+      }
+
       const joined = await api.joinRoom(input.code, input.name);
 
       rememberCrewId(joined.crewId);
@@ -107,6 +130,24 @@ export function OnlineApp() {
       });
       setView("LANDING");
     });
+
+  const resume = (code: string, name: string) => {
+    const seat = seatFor(code, name);
+
+    if (!seat) {
+      return;
+    }
+
+    rememberCrewId(seat.crewId);
+    save({
+      code: seat.code,
+      playerId: seat.playerId,
+      accessToken: seat.accessToken,
+      name: seat.name,
+      crewId: seat.crewId,
+    });
+    setView("LANDING");
+  };
 
   const leave = () => {
     clear();
@@ -159,6 +200,9 @@ export function OnlineApp() {
 
     return (
       <LandingScreen
+        seats={recentSeats()}
+        onResume={resume}
+        onForget={forgetSeat}
         onCreate={() => setView("CREATE")}
         onJoin={() => setView("JOIN")}
         onHowToPlay={() => setView("HOW_TO_PLAY")}
@@ -222,6 +266,7 @@ export function OnlineApp() {
         busy={busy}
         error={actionError}
         onStart={() => run(() => api.start(session.code, session.accessToken))}
+        onKick={(playerId) => run(() => api.kick(session.code, session.accessToken, playerId))}
         onScoreboard={() => setView("SCOREBOARD")}
         onLeave={leave}
       />

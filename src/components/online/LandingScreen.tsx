@@ -6,7 +6,12 @@ import { Button } from "@/components/ui/Button";
 import { Wordmark } from "@/components/ui/Wordmark";
 import { brand, copy } from "@/data/copy";
 
+import type { RecentSeat } from "@/lib/session/storage";
+
 interface LandingScreenProps {
+  seats: RecentSeat[];
+  onResume: (code: string, name: string) => void;
+  onForget: (code: string) => void;
   onCreate: () => void;
   onJoin: () => void;
   onHowToPlay: () => void;
@@ -14,11 +19,15 @@ interface LandingScreenProps {
 }
 
 export function LandingScreen({
+  seats,
+  onResume,
+  onForget,
   onCreate,
   onJoin,
   onHowToPlay,
   onScoreboard,
 }: LandingScreenProps) {
+  const lastSeat = seats[0];
   const [pressed, setPressed] = useState(false);
 
   return (
@@ -42,6 +51,26 @@ export function LandingScreen({
       </div>
 
       <div className="relative z-10 flex flex-col gap-3.5">
+        {lastSeat ? (
+          <div className="animate-card-rise mb-1 rounded-[1.5rem] bg-violet-900/70 p-3.5 ring-1 ring-cyan-soft/30">
+            <p className="mb-2.5 px-1 text-xs text-violet-200">
+              {`Você estava na sala ${lastSeat.code} como ${lastSeat.name}.`}
+            </p>
+            <div className="flex gap-2.5">
+              <Button
+                variant="primary"
+                fullWidth
+                onClick={() => onResume(lastSeat.code, lastSeat.name)}
+              >
+                Voltar pra sala
+              </Button>
+              <Button variant="ghost" onClick={() => onForget(lastSeat.code)}>
+                Esquecer
+              </Button>
+            </div>
+          </div>
+        ) : null}
+
         <Button
           variant="mint"
           size="lg"

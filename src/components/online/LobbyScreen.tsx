@@ -13,6 +13,7 @@ interface LobbyScreenProps {
   busy: boolean;
   error: string | null;
   onStart: () => void;
+  onKick: (playerId: string) => void;
   onScoreboard: () => void;
   onLeave: () => void;
 }
@@ -24,6 +25,7 @@ export function LobbyScreen({
   busy,
   error,
   onStart,
+  onKick,
   onScoreboard,
   onLeave,
 }: LobbyScreenProps) {
@@ -79,6 +81,16 @@ export function LobbyScreen({
               <span className="rounded-full bg-cyan-soft/20 px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-cyan-soft">
                 host
               </span>
+            ) : isHost ? (
+              <button
+                type="button"
+                onClick={() => onKick(player.id)}
+                disabled={busy}
+                aria-label={`Remover ${player.name} da sala`}
+                className="tap-shrink rounded-xl px-2.5 py-1.5 text-xs font-semibold text-pink-soft active:scale-95 disabled:opacity-40"
+              >
+                remover
+              </button>
             ) : null}
           </li>
         ))}

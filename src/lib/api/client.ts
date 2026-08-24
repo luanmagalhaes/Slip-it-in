@@ -123,6 +123,13 @@ export const api = {
       }>;
     }>(`/api/rooms/${code}/result`, { method: "GET" }),
 
+  kick: (code: string, token: string, playerId: string) =>
+    request<{ removed: string }>(
+      `/api/rooms/${code}/kick`,
+      { method: "POST", body: JSON.stringify({ playerId }) },
+      token,
+    ),
+
   sweep: (code: string) =>
     request<{ resolved: Array<{ claimId: string; status: string }>; winnerId: string | null }>(
       `/api/rooms/${code}/sweep`,

@@ -8,6 +8,8 @@ export interface Session {
 
 const storageKey = "slip-it-in.session";
 const crewKey = "slip-it-in.crew";
+const recentKey = "slip-it-in.recent";
+const maxRecent = 6;
 const listeners = new Set<() => void>();
 
 let cachedRaw: string | null = null;
@@ -81,6 +83,70 @@ function bootstrapFromUrl() {
   window.history.replaceState({}, "", window.location.pathname);
 }
 
+export interface RecentSeat {
+  code: string;
+  name: string;
+  accessToken: string;
+  playerId: string;
+  crewId: string | null;
+  savedAt: number;
+}
+
+function readRecent(): RecentSeat[] {
+  try {
+    const raw = window.localStorage.getItem(recentKey);
+    const parsed = raw ? (JSON.parse(raw) as RecentSeat[]) : [];
+
+    return Array.isArray(parsed) ? parsed.filter((seat) => seat.code && seat.accessToken) : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeRecent(seats: RecentSeat[]) {
+  try {
+    window.localStorage.setItem(recentKey, JSON.stringify(seats.slice(0, maxRecent)));
+  } catch {
+    return;
+  }
+}
+
+export function recentSeats(): RecentSeat[] {
+  return readRecent().sort((a, b) => b.savedAt - a.savedAt);
+}
+
+export function rememberSeat(session: Session, savedAt: number) {
+  const others = readRecent().filter(
+    (seat) => !(seat.code === session.code && seat.name === session.name),
+  );
+
+  writeRecent([
+    {
+      code: session.code,
+      name: session.name,
+      accessToken: session.accessToken,
+      playerId: session.playerId,
+      crewId: session.crewId ?? null,
+      savedAt,
+    },
+    ...others,
+  ]);
+}
+
+export function seatFor(code: string, name: string): RecentSeat | null {
+  const wanted = name.trim().toLowerCase();
+
+  return (
+    readRecent().find(
+      (seat) => seat.code === code.toUpperCase() && seat.name.trim().toLowerCase() === wanted,
+    ) ?? null
+  );
+}
+
+export function forgetSeat(code: string) {
+  writeRecent(readRecent().filter((seat) => seat.code !== code.toUpperCase()));
+}
+
 export function rememberedCrewId(): string | null {
   try {
     return window.localStorage.getItem(crewKey);
@@ -144,6 +210,7 @@ export function serverSessionSnapshot(): Session | null {
 
 export function writeSession(next: Session) {
   writeRaw(JSON.stringify(next));
+  rememberSeat(next, Date.now());
   listeners.forEach((listener) => listener());
 }
 

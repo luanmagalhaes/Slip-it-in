@@ -6,8 +6,15 @@
 - Local:         http://localhost:1000
 - Network:       http://192.168.0.8:1000
 - Environments: .env.local
-✓ Ready in 548ms
-✓ Running next.config.ts took 33ms
+✓ Ready in 463ms
+✓ Running next.config.ts took 29ms
 
- POST /api/rooms 200 in 10.4s (next.js: 3.5s, application-code: 6.9s)
- GET / 200 in 5.6s (next.js: 1116ms, application-code: 4.5s)
+ POST /api/rooms 200 in 3.7s (next.js: 718ms, application-code: 3.0s)
+ POST /api/rooms/2PM7VM/join 200 in 2.6s (next.js: 841ms, application-code: 1751ms)
+ POST /api/rooms/2PM7VM/join 200 in 1825ms (next.js: 4ms, application-code: 1821ms)
+ POST /api/rooms/2PM7VM/kick 200 in 1895ms (next.js: 642ms, application-code: 1253ms)
+ POST /api/rooms/2PM7VM/join 200 in 2.4s (next.js: 5ms, application-code: 2.4s)
+ POST /api/rooms/2PM7VM/join 200 in 2.4s (next.js: 157ms, application-code: 2.2s)
+ POST /api/rooms/2PM7VM/join 200 in 2.0s (next.js: 1.9ms, application-code: 2.0s)
+ POST /api/rooms/2PM7VM/kick 403 in 636ms (next.js: 16ms, application-code: 620ms)
+ GET /api/rooms/2PM7VM/me 200 in 6.2s (next.js: 5.3s, application-code: 874ms)

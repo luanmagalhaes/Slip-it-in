@@ -147,10 +147,22 @@ export async function joinRoom(input: { code: string; name: string; isHost?: boo
     .select("id", { count: "exact", head: true })
     .eq("room_id", room.id);
 
-  const seat = (count ?? 0) + 1;
+  if ((count ?? 0) >= maxPlayers) {
+    throw new ServiceError(`a sala esta cheia (maximo ${maxPlayers})`, 409);
+  }
+
+  const { data: lastSeat } = await client
+    .from("players")
+    .select("seat")
+    .eq("room_id", room.id)
+    .order("seat", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  const seat = ((lastSeat?.seat as number | undefined) ?? 0) + 1;
 
   if (seat > maxPlayers) {
-    throw new ServiceError(`a sala esta cheia (maximo ${maxPlayers})`, 409);
+    throw new ServiceError("a sala ja teve jogadores demais, crie uma nova", 409);
   }
 
   const { data: player, error } = await client
@@ -161,7 +173,12 @@ export async function joinRoom(input: { code: string; name: string; isHost?: boo
 
   if (error) {
     if (error.code === "23505") {
-      throw new ServiceError("esse nome ja esta na mesa", 409);
+      throw new ServiceError(
+        error.message.includes("seat")
+          ? "nao ha assento livre nesta sala"
+          : "esse nome ja esta na mesa",
+        409,
+      );
     }
 
     throw new ServiceError(error.message, 500);
@@ -803,4 +820,41 @@ export async function rematch(input: { code: string; token: string }) {
   }
 
   return { code: created.code as string, alreadyOpen: false };
+}
+
+export async function kickPlayer(input: { code: string; token: string; playerId: string }) {
+  const client = serverClient();
+  const room = await loadRoom(input.code);
+  const me = await loadPlayerByToken(room, input.token);
+
+  if (!me.players.is_host) {
+    throw new ServiceError("apenas o host pode remover jogadores", 403);
+  }
+
+  if (input.playerId === me.player_id) {
+    throw new ServiceError("o host nao pode remover a si mesmo", 422);
+  }
+
+  if (room.phase !== RoomPhase.Lobby) {
+    throw new ServiceError("so da para remover jogador antes de comecar", 409);
+  }
+
+  const { data: target } = await client
+    .from("players")
+    .select("id, name")
+    .eq("id", input.playerId)
+    .eq("room_id", room.id)
+    .maybeSingle();
+
+  if (!target) {
+    throw new ServiceError("jogador nao esta nesta sala", 404);
+  }
+
+  const { error } = await client.from("players").delete().eq("id", input.playerId);
+
+  if (error) {
+    throw new ServiceError(error.message, 500);
+  }
+
+  return { removed: target.name as string };
 }
